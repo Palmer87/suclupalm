@@ -14,7 +14,7 @@ class NoteController extends Controller
 
     public function create(Evaluation $evaluation)
     {
-        if ($evaluation->statut === 'validée') {
+        if ($evaluation->statut === 'validee') {
             abort(403, 'Notes déjà validées');
         }
 
@@ -35,7 +35,7 @@ class NoteController extends Controller
 
     public function store(Request $request, Evaluation $evaluation)
     {
-        if ($evaluation->statut === 'validée') {
+        if ($evaluation->statut === 'validee') {
             return back()->with('error', 'Impossible de modifier des notes validées.');
         }
 
@@ -72,11 +72,11 @@ class NoteController extends Controller
 
     public function valider(Evaluation $evaluation)
     {
-        if ($evaluation->statut === 'validée') {
+        if ($evaluation->statut === 'validee') {
             abort(403, 'Notes déjà validées');
         }
 
-        $evaluation->update(['statut' => 'validée']);
+        $evaluation->update(['statut' => 'validee']);
 
         return redirect()->route('admin.evaluations.index')
             ->with('success', 'Notes validées avec succès');

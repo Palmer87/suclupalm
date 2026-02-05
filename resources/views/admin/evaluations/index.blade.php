@@ -195,7 +195,17 @@
                                 <td>{{ $evaluation->type }}</td>
                                 <td>{{ $evaluation->coefficient }}</td>
                                 <td>{{ $evaluation->note_max }}</td>
-                                <td><a class="btn btn-primary btn-sm" href="{{ route('admin.evaluations.notes.create', $evaluation->id) }}"><i class="fas fa-pen text-white"></i>Saisir notes</a></td>
+                                <td>
+                                    @if($evaluation->statut !== 'validee')
+                                        <a class="btn btn-primary btn-lg rounded-pill" href="{{ route('admin.evaluations.notes.create', $evaluation->id) }}">
+                                            <i class="fas fa-pen text-white"></i> Saisir notes
+                                        </a>
+                                    @else
+                                        <a class="btn btn-info btn-lg rounded-pill" href="{{ route('admin.evaluations.show', $evaluation->id) }}">
+                                            <i class="fas fa-eye text-white"></i> Voir les notes
+                                        </a>
+                                    @endif
+                                </td>
                                 <td>{{ $evaluation->statut }}</td>
                                 <td>{{ \Carbon\Carbon::parse($evaluation->date_evaluation)->format('d/m/Y') }}</td>
                                 <td>
@@ -208,6 +218,16 @@
                                          
                                             <a class="dropdown-item" href="{{ route('admin.evaluations.show', $evaluation->id) }}"><i
                                                     class="fas fa-eye text-orange-red"></i>Voir</a>
+                                            
+                                            @if($evaluation->statut !== 'validee')
+                                                <form action="{{ route('admin.evaluations.valider', $evaluation->id) }}" method="POST" onsubmit="return confirm('Voulez-vous vraiment valider cette évaluation ? Cette action est irréversible.');">
+                                                    @csrf
+                                                    <button type="submit" class="dropdown-item">
+                                                        <i class="fas fa-check text-success"></i> Valider
+                                                    </button>
+                                                </form>
+                                            @endif
+
                                             <a class="dropdown-item" href="{{ route('admin.evaluations.edit', $evaluation->id) }}"><i
                                                     class="fas fa-cogs text-dark-pastel-green"></i>Edit</a>
                                             <form action="{{ route('admin.evaluations.destroy', $evaluation->id) }}" method="POST" onsubmit="return confirm('Êtes-vous sûr ?');">

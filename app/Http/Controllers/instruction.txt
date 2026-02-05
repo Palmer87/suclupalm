@@ -791,7 +791,7 @@ RÉSUMÉ FINAL - ÉTAT DU PROJET
 2. 🔥 CRITIQUE - Suivi des Présences (1-2 jours)
    ├── Créer modèle Attendance
    ├── Interface de pointage
-   └── Rapports de présence
+   └── Rapports de présence     
 
 3. 🔧 HAUTE - Bulletins Scolaires (1-2 jours)
    ├── Calcul moyennes trimestrielles
@@ -802,7 +802,7 @@ RÉSUMÉ FINAL - ÉTAT DU PROJET
    ├── Modèles Payment, Fee, Invoice
    ├── Interface gestion frais
    └── Historique paiements
-
+   
 5. 📈 MOYENNE - Rapports et Statistiques (2-3 jours)
    ├── Dashboard avec graphiques
    ├── Export Excel/PDF

@@ -178,8 +178,19 @@ Route::middleware('auth', 'role:administrateur')->group(function () {
     // Routes spécifiques pour la saisie des notes d'une évaluation
     Route::get('/evaluations/{evaluation}/notes', [NoteController::class, 'create'])->name('admin.evaluations.notes.create');
     Route::post('/evaluations/{evaluation}/notes', [NoteController::class, 'store'])->name('admin.evaluations.notes.store');
+    Route::post('/evaluations/{evaluation}/valider', [NoteController::class, 'valider'])->name('admin.evaluations.valider');
     
     Route::resource('note', NoteController::class)->names('admin.note');
+
+    /*
+    |--------------------------------------------------------------------------
+    | BULLETINS
+    |--------------------------------------------------------------------------
+    */
+    Route::get('/bulletins', [\App\Http\Controllers\BulletinController::class, 'index'])->name('admin.bulletins.index');
+    Route::get('/bulletins/{classe}', [\App\Http\Controllers\BulletinController::class, 'generate'])->name('admin.bulletins.generate');
+    Route::get('/bulletins/{classe}/student/{student}', [\App\Http\Controllers\BulletinController::class, 'studentBulletin'])->name('admin.bulletins.student');
+    
     /*
     |--------------------------------------------------------------------------
     | ROLES

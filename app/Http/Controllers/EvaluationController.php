@@ -6,6 +6,7 @@ use App\Models\Classe;
 use App\Models\Enseignant;
 use App\Models\Evaluation;
 use App\Models\Matiere;
+use App\Models\Student;
 use Illuminate\Http\Request;
 
 class EvaluationController extends Controller
@@ -59,7 +60,19 @@ class EvaluationController extends Controller
      */
     public function show(Evaluation $evaluation)
     {
-        return view('admin.evaluations.show', compact('evaluation'));
+        // Récupérer les étudiants via les inscriptions valides pour la classe de l'évaluation
+        $students = Student::whereHas('inscriptions', function($query) use ($evaluation) {
+            $query->where('classe_id', $evaluation->classe_id)
+                  ->where('status', 'inscrite');
+        })
+        ->with(['notes' => function($query) use ($evaluation) {
+            $query->where('evaluation_id', $evaluation->id);
+        }])
+        ->orderBy('nom')
+        ->orderBy('prenom')
+        ->get();
+
+        return view('admin.evaluations.show', compact('evaluation', 'students'));
     }
 
    

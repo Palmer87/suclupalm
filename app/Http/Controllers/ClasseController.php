@@ -114,7 +114,7 @@ class ClasseController extends Controller
             $jourNom = $emploi->jour->jours ?? '';
             if (empty($jourNom)) {
                 $emploiIncomplets++;
-                Log::warning('Emploi du temps - Jour sans nom', [
+                \Log::warning('Emploi du temps - Jour sans nom', [
                     'emploi_id' => $emploi->id,
                     'jour_id' => $emploi->jours_id,
                 ]);

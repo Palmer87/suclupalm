@@ -320,7 +320,10 @@
                         </li> 
                         <li class="nav-item">
                             <a href="{{ route('admin.note.index') }}" class="nav-link"><i class="flaticon-bed"></i><span>Note</span></a>
-                        </li>   
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.bulletins.index') }}" class="nav-link"><i class="flaticon-script"></i><span>Bulletins</span></a>
+                        </li>
                         <li class="nav-item">
                             <a href="notice-board.html" class="nav-link"><i
                                     class="flaticon-script"></i><span>Notice</span></a>
