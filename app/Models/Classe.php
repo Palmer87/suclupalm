@@ -44,5 +44,9 @@ class Classe extends Model
                     ->withPivot('coefficient')
                     ->withTimestamps();
     }
+    public function fraisScolaires()
+    {
+        return $this->hasMany(Frais_Scolaire::class);
+    }
 
 }

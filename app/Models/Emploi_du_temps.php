@@ -14,7 +14,7 @@ class Emploi_du_temps extends Model
         'horaire_id',
         'annee_scolaire_id',
         'jours_id',
-      
+        'salle',
     ];
     public function classe()
     {
@@ -24,11 +24,13 @@ class Emploi_du_temps extends Model
     {
         return $this->belongsTo(Annee_scolaire::class);
     }
-    public function enseignant(){
+    public function enseignant()
+    {
         return $this->belongsTo(Enseignant::class);
     }
 
-    public function matiere(){
+    public function matiere()
+    {
         return $this->belongsTo(Matiere::class);
     }
     public function horaire()

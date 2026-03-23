@@ -114,6 +114,11 @@
                     </select>
                 </div>
 
+                <div class="col-xl-3 col-lg-6 col-12 form-group">
+                    <label>Salle</label>
+                    <input type="text" name="salle" class="form-control" placeholder="Ex: Salle 101" value="{{ old('salle') }}">
+                </div>
+
 
                 <div class="col-12 form-group">
                     <button type="submit" class="btn-fill-lg btn-gradient-yellow btn-hover-bluedark">Enregistrer</button>

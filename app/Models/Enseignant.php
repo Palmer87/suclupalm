@@ -18,8 +18,16 @@ class Enseignant extends Model
         'specialite',
         'statut',
 
-       
+
     ];
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+    public function affectations()
+    {
+        return $this->hasMany(affectations_pedagogiques::class, 'enseignant_id');
+    }
     public function matieres()
     {
         return $this->hasMany(Matiere::class);
@@ -28,6 +36,7 @@ class Enseignant extends Model
     {
         return $this->hasMany(Evaluation::class, 'enseignant_id');
     }
-  
+
+
 
 }

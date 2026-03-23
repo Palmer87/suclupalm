@@ -10,9 +10,9 @@ class Student extends Model
     /** @use HasFactory<\Database\Factories\StudentFactory> */
     use HasFactory;
 
-  
+
     // Notes de l'élève
-  
+
 
     protected $fillable = [
         'matricule',
@@ -44,7 +44,7 @@ class Student extends Model
     public static function boot()
     {
         parent::boot();
-   
+
         self::creating(function ($student) {
             $student->matricule = $student->generateMatricule();
         });
@@ -77,15 +77,24 @@ class Student extends Model
         );
     }
     public function notes()
-{
-    return $this->hasMany(Note::class);
-}
+    {
+        return $this->hasMany(Note::class);
+    }
 
-public function evaluations()
-{
-    return $this->belongsToMany(Evaluation::class, 'notes')
-                ->withPivot('note')
-                ->withTimestamps();
-}
+    public function evaluations()
+    {
+        return $this->belongsToMany(Evaluation::class, 'notes')
+            ->withPivot('note')
+            ->withTimestamps();
+    }
 
+    public function documents()
+    {
+        return $this->hasMany(StudentDocument::class);
+    }
+
+    public function presences()
+    {
+        return $this->hasMany(Presence::class);
+    }
 }

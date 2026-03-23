@@ -35,18 +35,15 @@
                             </div>
                         </div>
                         <form class="mg-b-20">
-                            <div class="row gutters-8">
+                                <div class="row gutters-8">
                                 <div class="col-3-xxxl col-xl-3 col-lg-3 col-12 form-group">
-                                    <input type="text" placeholder="Search by ID ..." class="form-control">
-                                </div>
-                                <div class="col-4-xxxl col-xl-4 col-lg-3 col-12 form-group">
-                                    <input type="text" placeholder="Search by Name ..." class="form-control">
-                                </div>
-                                <div class="col-4-xxxl col-xl-3 col-lg-3 col-12 form-group">
-                                    <input type="text" placeholder="Search by Class ..." class="form-control">
+                                    <input type="text" placeholder="Search by Roll ..." class="form-control">
                                 </div>
                                 <div class="col-1-xxxl col-xl-2 col-lg-3 col-12 form-group">
                                     <button type="submit" class="fw-btn-fill btn-gradient-yellow">SEARCH</button>
+                                </div>
+                                     <div class="col-2-xxxl col-xl-2 col-lg-3 col-12 form-group">
+                                     <a href="{{ route('admin.user.create') }}" class="fw-btn-fill btn-gradient-blue">CRÉER UN UTILISATEUR</a>
                                 </div>
                             </div>
                         </form>

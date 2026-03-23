@@ -11,9 +11,60 @@ use App\Models\Jour;
 use App\Models\Matiere;
 use Illuminate\Http\Request;
 
+use Barryvdh\DomPDF\Facade\Pdf;
+
 class EmploiDuTempsController extends Controller
 {
-   
+    /**
+     *  Export PDF par classe
+     */
+    public function downloadPDFByClasse($id)
+    {
+        $classe = Classe::findOrFail($id);
+        $annee = Annee_scolaire::active();
+
+        $schedules = Emploi_du_temps::with(['matiere', 'enseignant', 'horaire', 'jour'])
+            ->where('classe_id', $id)
+            ->orderBy('jours_id')
+            ->orderBy('horaire_id')
+            ->get();
+
+        $data = [
+            'schedules' => $schedules,
+            'title' => 'Classe: ' . $classe->nom,
+            'type' => 'classe',
+            'annee' => $annee
+        ];
+
+        $pdf = Pdf::loadView('admin.emploi_du_temps.pdf', $data);
+        return $pdf->download('emploi_du_temps_' . $classe->nom . '.pdf');
+    }
+
+    /**
+     *  Export PDF par enseignant
+     */
+    public function downloadPDFByTeacher($id)
+    {
+        $enseignant = Enseignant::findOrFail($id);
+        $annee = Annee_scolaire::active();
+
+        $schedules = Emploi_du_temps::with(['matiere', 'classe', 'horaire', 'jour'])
+            ->where('enseignant_id', $id)
+            ->orderBy('jours_id')
+            ->orderBy('horaire_id')
+            ->get();
+
+        $data = [
+            'schedules' => $schedules,
+            'title' => 'Enseignant: ' . $enseignant->nom . ' ' . $enseignant->prenom,
+            'type' => 'enseignant',
+            'annee' => $annee
+        ];
+
+        $pdf = Pdf::loadView('admin.emploi_du_temps.pdf', $data);
+        return $pdf->download('emploi_du_temps_' . $enseignant->nom . '.pdf');
+    }
+
 
     public function index(Request $request)
     {
@@ -41,8 +92,8 @@ class EmploiDuTempsController extends Controller
     public function create(Request $request)
     {
         $classeId = $request->get('classe_id');
-        
-        return view('admin.emploi_du_temps.create', [   
+
+        return view('admin.emploi_du_temps.create', [
             'classes' => Classe::all(),
             'matieres' => Matiere::all(),
             'enseignants' => Enseignant::all(),
@@ -65,6 +116,7 @@ class EmploiDuTempsController extends Controller
             'annee_scolaire_id' => 'required|exists:annee_scolaires,id',
             'horaire_id' => 'required|exists:horaires,id',
             'jours_id' => 'required|exists:jours,id',
+            'salle' => 'nullable|string|max:100',
         ]);
 
         // Récupérer l'horaire pour dériver heure_debut / heure_fin
@@ -73,17 +125,17 @@ class EmploiDuTempsController extends Controller
         $heureFin = $horaire->heure_fin;
 
         // 🔥 CONTRÔLE DES CONFLITS
-       $conflict = Emploi_du_temps::where('jours_id', $request->jours_id)
-    ->where('annee_scolaire_id', $request->annee_scolaire_id)
-    ->where(function ($q) use ($request) {
-        $q->where('classe_id', $request->classe_id)
-          ->orWhere('enseignant_id', $request->enseignant_id);
-    })
-    ->whereHas('horaire', function ($q) use ($heureDebut, $heureFin) {
-        $q->where('heure_debut', '<', $heureFin)
-          ->where('heure_fin', '>', $heureDebut);
-    })
-    ->exists();
+        $conflict = Emploi_du_temps::where('jours_id', $request->jours_id)
+            ->where('annee_scolaire_id', $request->annee_scolaire_id)
+            ->where(function ($q) use ($request) {
+                $q->where('classe_id', $request->classe_id)
+                    ->orWhere('enseignant_id', $request->enseignant_id);
+            })
+            ->whereHas('horaire', function ($q) use ($heureDebut, $heureFin) {
+                $q->where('heure_debut', '<', $heureFin)
+                    ->where('heure_fin', '>', $heureDebut);
+            })
+            ->exists();
 
         if ($conflict) {
             return back()->withErrors(
@@ -93,13 +145,13 @@ class EmploiDuTempsController extends Controller
 
         $horaire = Horaire::findOrFail($request->horaire_id);
 
-            $heureDebut = $horaire->heure_debut;
-            $heureFin   = $horaire->heure_fin;
+        $heureDebut = $horaire->heure_debut;
+        $heureFin = $horaire->heure_fin;
         if ($heureDebut >= $heureFin) {
-        return back()->withErrors([
-            'horaire' => 'L’heure de début doit être inférieure à l’heure de fin.'
-        ]);
-    }
+            return back()->withErrors([
+                'horaire' => 'L’heure de début doit être inférieure à l’heure de fin.'
+            ]);
+        }
 
 
 
@@ -111,7 +163,7 @@ class EmploiDuTempsController extends Controller
             'annee_scolaire_id' => $request->annee_scolaire_id,
             'horaire_id' => $request->horaire_id,
             'jours_id' => $request->jours_id,
-                
+            'salle' => $request->salle,
         ]);
 
         return redirect()
@@ -138,7 +190,7 @@ class EmploiDuTempsController extends Controller
     /**
      * 🔄 Mise à jour
      */
-    public function update(Request $request, Emploi_du_temps $emploi_du_temps)  
+    public function update(Request $request, Emploi_du_temps $emploi_du_temps)
     {
         $request->validate([
             'classe_id' => 'required|exists:classes,id',
@@ -147,6 +199,7 @@ class EmploiDuTempsController extends Controller
             'annee_scolaire_id' => 'required|exists:annee_scolaires,id',
             'horaire_id' => 'required|exists:horaires,id',
             'jours_id' => 'required|exists:jours,id',
+            'salle' => 'nullable|string|max:100',
         ]);
 
         $horaire = Horaire::findOrFail($request->horaire_id);
@@ -158,13 +211,12 @@ class EmploiDuTempsController extends Controller
             ->where('annee_scolaire_id', $request->annee_scolaire_id)
             ->where(function ($q) use ($request) {
                 $q->where('classe_id', $request->classe_id)
-                  ->orWhere('enseignant_id', $request->enseignant_id);
+                    ->orWhere('enseignant_id', $request->enseignant_id);
             })
             ->whereHas('horaire', function ($q) use ($heureDebut, $heureFin) {
                 $q->where('heure_debut', '<', $heureFin)
-                  ->where('heure_fin', '>', $heureDebut);
-            })
-            ->exists();
+                    ->where('heure_fin', '>', $heureDebut);
+            })->exists();
 
         if ($conflict) {
             return back()->withErrors('Conflit horaire détecté.');
@@ -177,7 +229,7 @@ class EmploiDuTempsController extends Controller
             'annee_scolaire_id' => $request->annee_scolaire_id,
             'horaire_id' => $request->horaire_id,
             'jours_id' => $request->jours_id,
-          
+            'salle' => $request->salle,
         ]);
 
         return redirect()
@@ -206,7 +258,7 @@ class EmploiDuTempsController extends Controller
      */
     public function byClasse($id)
     {
-        $schedules = Emploi_du_temps::with(['matiere','enseignant', 'horaire', 'jour'])
+        $schedules = Emploi_du_temps::with(['matiere', 'enseignant', 'horaire', 'jour'])
             ->where('classe_id', $id)
             ->orderBy('jours_id')
             ->orderBy('horaire_id')
@@ -220,7 +272,7 @@ class EmploiDuTempsController extends Controller
      */
     public function byTeacher($id)
     {
-        $schedules = Emploi_du_temps::with(['classe','matiere','enseignant', 'horaire', 'jour'])
+        $schedules = Emploi_du_temps::with(['classe', 'matiere', 'enseignant', 'horaire', 'jour'])
             ->where('enseignant_id', $id)
             ->orderBy('jours_id')
             ->orderBy('horaire_id')
@@ -234,9 +286,12 @@ class EmploiDuTempsController extends Controller
      */
     public function bySalle($salle)
     {
-        // Note: La colonne salle n'existe pas dans la migration actuelle
-        // Cette méthode est désactivée jusqu'à ce que la colonne soit ajoutée
-        $schedules = collect([]);
+        $schedules = Emploi_du_temps::with(['classe', 'matiere', 'enseignant', 'horaire', 'jour'])
+            ->where('salle', $salle)
+            ->orderBy('jours_id')
+            ->orderBy('horaire_id')
+            ->get();
+
         return view('admin.emploi_du_temps.by-salle', compact('schedules', 'salle'));
     }
 

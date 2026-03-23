@@ -120,7 +120,7 @@
                                 <td>
                                     <div class="form-check">
                                         <input type="checkbox" class="form-check-input">
-                                        <label class="form-check-label"><a href="{{ route('admin.classe.show', $classe->id) }}">#{{ $classe->id }}</a></label>
+                                        <label class="form-check-label"><a href="{{ route('admin.classe.show', $classe->id) }}">{{ $classe->id }}</a></label>
                                     </div>
                                 </td>
                                 <td>{{ $classe->nom }}</td>

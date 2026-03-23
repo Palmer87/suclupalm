@@ -19,4 +19,9 @@ class Annee_scolaire extends Model
     {
         return self::where('status', 'actif')->first();
     }
+
+    public function periodes()
+    {
+        return $this->hasMany(Periode::class, 'annee_scolaire_id');
+    }
 }

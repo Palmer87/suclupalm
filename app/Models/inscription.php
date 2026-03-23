@@ -42,4 +42,9 @@ class Inscription extends Model
     {
         return $this->belongsTo(Cycle::class);
     }
+
+    public function factures()
+    {
+        return $this->hasMany(Facture::class);
+    }
 }

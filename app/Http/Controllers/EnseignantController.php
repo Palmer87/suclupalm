@@ -40,30 +40,30 @@ class EnseignantController extends Controller
                 'telephone' => 'required|string|regex:/^[\+]?[0-9\-\(\)\s]+$/|max:20',
                 'email' => 'required|email|unique:enseignants,email|max:255',
                 'specialite' => 'required|string|max:255',
-    
+
             ]);
             $user = User::create([
-            'name' => $request->input('nom'),
-            'email' => $request->input('email'),
-            'password' =>Hash::make('123456'),
-        ]);
-    
-        $user->assignRole('enseignant');
+                'name' => $request->input('nom'),
+                'email' => $request->input('email'),
+                'password' => Hash::make('123456'),
+            ]);
 
-    
-            $enseignant =Enseignant::create([
-            'user_id' => $user->id,
-            'nom' => $request->input('nom'),
-            'prenom' => $request->input('prenom'),
-            'telephone' => $request->input('telephone'),
-            'email' => $request->input('email'),
-            'specialite' => $request->input('specialite'),
-            'statut' => 'actif',
-        ]); 
+            $user->assignRole('enseignant');
+
+
+            $enseignant = Enseignant::create([
+                'user_id' => $user->id,
+                'nom' => $request->input('nom'),
+                'prenom' => $request->input('prenom'),
+                'telephone' => $request->input('telephone'),
+                'email' => $request->input('email'),
+                'specialite' => $request->input('specialite'),
+                'statut' => 'actif',
+            ]);
         } catch (\Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }
-        
+
         return redirect()->route('admin.enseignant.index')->with('success', 'Enseignant ajoute avec succes');
     }
 
@@ -72,8 +72,10 @@ class EnseignantController extends Controller
      */
     public function show(Enseignant $enseignant)
     {
+        $enseignant->load(['user', 'affectations.matiere', 'affectations.classe', 'affectations.anneeScolaire', 'evaluations.matiere']);
         return view('admin.enseignant.show', compact('enseignant'));
     }
+
 
     /**
      * Show the form for editing the specified resource.
@@ -93,13 +95,13 @@ class EnseignantController extends Controller
             'nom' => 'required|string|max:255|regex:/^[a-zA-ZÀ-ÿ\s\-]+$/',
             'prenom' => 'required|string|max:255|regex:/^[a-zA-ZÀ-ÿ\s\-]+$/',
             'telephone' => 'required|string|regex:/^[\+]?[0-9\-\(\)\s]+$/|max:20',
-            'email' => 'required|email|unique:enseignants,email,'.$enseignant->id.',id|max:255',
+            'email' => 'required|email|unique:enseignants,email,' . $enseignant->id . ',id|max:255',
             'specialite' => 'required|string|max:255',
-            
+
         ]);
-         
+
         $enseignant->update($request->all());
-        
+
         return redirect()->route('admin.enseignant.index')->with('success', 'Enseignant modifie avec succes');
     }
 
@@ -109,7 +111,7 @@ class EnseignantController extends Controller
     public function destroy(Enseignant $enseignant)
     {
         $enseignant->delete();
-        
+
         return redirect()->route('admin.enseignant.index')->with('success', 'Enseignant supprime avec succes');
     }
 }

@@ -19,9 +19,15 @@ class Evaluation extends Model
         'statut',
         'date_evaluation',
         'libelle',
+        'periode_id',
     ];
 
-     /* ================= RELATIONS ================= */
+    /* ================= RELATIONS ================= */
+
+    public function periode()
+    {
+        return $this->belongsTo(Periode::class);
+    }
 
     public function classe()
     {
