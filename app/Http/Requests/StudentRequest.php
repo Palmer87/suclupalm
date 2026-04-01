@@ -74,9 +74,7 @@ class StudentRequest extends FormRequest
             'prenom.required' => 'Le prénom est requis.',
             'nom.max' => 'Le nom ne doit pas dépasser 255 caractères.',
             'nom.required' => 'Le nom est requis.',
-            
-            
-            
+   
         ];
     }
 }
