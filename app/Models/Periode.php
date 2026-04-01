@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\BelongsToEcole;
 
 class Periode extends Model
 {
+    use BelongsToEcole;
     protected $fillable = [
         'nom',
         'type',
@@ -13,6 +15,7 @@ class Periode extends Model
         'date_fin',
         'annee_scolaire_id',
         'status',
+        'ecole_id',
     ];
 
     public function anneeScolaire()

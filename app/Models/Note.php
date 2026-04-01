@@ -4,16 +4,18 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\BelongsToEcole;
 
 class Note extends Model
 {
-     use HasFactory;
+     use HasFactory, BelongsToEcole;
 
     protected $fillable = [
         'evaluation_id',
         'student_id',
         'note',
         'appreciation',
+        'ecole_id',
     ];
 
     protected $casts = [

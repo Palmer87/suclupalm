@@ -105,7 +105,7 @@
                     <div class="col-6">
                         <div class="item-content">
                             <div class="item-title">Élèves</div>
-                            <div class="item-number"><span class="counter" data-num="{{ count($students) }}">{{ count($students) }}</span></div>
+                            <div class="item-number"><span class="counter" data-num="{{ $students }}">{{ $students }}</span></div>
                         </div>
                     </div>
                 </div>
@@ -122,7 +122,7 @@
                     <div class="col-6">
                         <div class="item-content">
                             <div class="item-title">Enseignants</div>
-                            <div class="item-number"><span class="counter" data-num="{{ $teachers->count() }}">{{ $teachers->count() }}</span></div>
+                            <div class="item-number"><span class="counter" data-num="{{ $teachers }}">{{ $teachers }}</span></div>
                         </div>
                     </div>
                 </div>
@@ -139,7 +139,7 @@
                     <div class="col-6">
                         <div class="item-content">
                             <div class="item-title">Parents</div>
-                            <div class="item-number"><span class="counter" data-num="{{ count($dashboardParents) }}">{{ count($dashboardParents) }}</span></div>
+                            <div class="item-number"><span class="counter" data-num="{{ $dashboardParents }}">{{ $dashboardParents }}</span></div>
                         </div>
                     </div>
                 </div>
@@ -156,7 +156,7 @@
                     <div class="col-6">
                         <div class="item-content">
                             <div class="item-title">Classes</div>
-                            <div class="item-number"><span class="counter" data-num="{{ count($dashboardClasses) }}">{{ count($dashboardClasses) }}</span></div>
+                            <div class="item-number"><span class="counter" data-num="{{ $dashboardClasses }}">{{ $dashboardClasses }}</span></div>
                         </div>
                     </div>
                 </div>

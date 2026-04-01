@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\BelongsToEcole;
 
 class Niveau extends Model
 {
-    protected $fillable = ['cycle_id', 'nom']; 
+    use HasFactory, BelongsToEcole;
+    protected $fillable = ['cycle_id', 'nom', 'ecole_id']; 
     public function classes()
     {
         return $this->hasMany(Classe::class);

@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Annee_scolaire;
+use App\Models\Ecole;
 use App\Models\Classe;
 use App\Models\Cycle;
+use App\Models\EcolePayment;
 use App\Models\Enseignant;
 use App\Models\Evaluation;
 use App\Models\inscription;
@@ -29,25 +31,62 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        // Core collections for summary cards
-        $students = Student::all();
-        $maleStudents = Student::where('sexe', 'M')->count();
-        $femaleStudents = Student::where('sexe', 'F')->count();
-        $teachers = Enseignant::all();
-        $dashboardParents = Parents::all();
-        $dashboardClasses = Classe::get();
-        $enseignants = Enseignant::count();
+        // 1. MONITORING DASHBOARD (SUPER ADMIN ONLY)
+        if (auth()->user()->hasRole('Super Admin')) {
+            $totalSchools       = Ecole::count();
+            $activeSchoolsCount = Ecole::where('is_active', true)->count();
+            $totalStudentsCount = Student::count();
+            $totalRevenue       = Payment::sum('montant'); // Scolar (B2C)
+            $platformRevenue    = EcolePayment::sum('montant'); // Platform (B2B)
+            $newSchoolsCount    = Ecole::where('created_at', '>', now()->subDays(30))->count();
+            
+            // Top 5 schools by size
+            $topSchools = Ecole::withCount('etudiants')
+                ->orderBy('etudiants_count', 'desc')
+                ->take(5)
+                ->get();
+            
+            // Last 10 payments platform-wide (Scolar)
+            $recentPayments = EcolePayment::with('ecole')
+                ->latest()
+                ->take(10)
+                ->get();
+
+            return view('admin.dashboard_monitoring', compact(
+                'totalSchools',
+                'activeSchoolsCount',
+                'totalStudentsCount',
+                'totalRevenue',
+                'platformRevenue',
+                'newSchoolsCount',
+                'topSchools',
+                'recentPayments'
+            ));
+        }
+
+        // 2. SCOLAR DASHBOARD (SCHOOL ADMINS & OTHERS)
+        // Core counts — utiliser count() au lieu de all() pour éviter OOM
+        $studentsCount   = Student::count();
+        $maleStudents    = Student::where('sexe', 'M')->count();
+        $femaleStudents  = Student::where('sexe', 'F')->count();
+        $enseignants     = Enseignant::count();
+        $dashboardParents = Parents::count();
+
+        // Aliases attendus dans la vue
+        $students        = $studentsCount;
+        $teachers        = $enseignants;
+        $dashboardClasses = Classe::count();
 
         // Additional counts
-        $inscriptionsCount = Inscription::count();
-        $evaluationsCount = Evaluation::count();
-        $matieresCount = Matiere::count();
-        $niveauxCount = Niveau::count();
-        $notesCount = Note::count();
+        $inscriptionsCount  = Inscription::count();
+        $evaluationsCount   = Evaluation::count();
+        $matieresCount      = Matiere::count();
+        $niveauxCount       = Niveau::count();
+        $notesCount         = Note::count();
 
 
         // Financial indicators
-        $totalEncasse = Payment::sum('montant');
+        $totalEncasse    = Payment::sum('montant');
         $resteAPercevoir = Facture::sum('reste');
 
         // Overdue alerts
@@ -174,7 +213,6 @@ class DashboardController extends Controller
             'niveauxCount',
             'classesCount',
             'matieresCount',
-
             'enseignantsCount',
             'usersCount',
             'anneeActive',
@@ -182,7 +220,7 @@ class DashboardController extends Controller
             'cycles',
             'niveaux',
             'classes',
-            'matieres'
+            'matieres',
         ));
     }
 }

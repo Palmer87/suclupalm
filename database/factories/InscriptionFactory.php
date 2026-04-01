@@ -17,7 +17,12 @@ class InscriptionFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'student_id' => \App\Models\Student::factory(),
+            'annee_scolaire_id' => \App\Models\Annee_scolaire::factory(),
+            'cycle_id' => \App\Models\Cycle::factory(),
+            'niveau_id' => \App\Models\Niveau::factory(),
+            'classe_id' => \App\Models\Classe::factory(),
+            'status' => 'inscrite',
         ];
     }
 }

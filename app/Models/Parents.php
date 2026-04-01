@@ -4,12 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\BelongsToEcole;
 
 class Parents extends Model
 {
     /** @use HasFactory<\Database\Factories\ParentsFactory> */
-    use HasFactory;
-    protected $fillable = ['nom','prenom','email','telephone','autre_telephone','adresse'];
+    use HasFactory, BelongsToEcole;
+    protected $fillable = ['nom','prenom','email','telephone','autre_telephone','adresse', 'ecole_id'];
     public function students()
     {
         return $this->belongsToMany(

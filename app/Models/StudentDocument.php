@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\BelongsToEcole;
 
 class StudentDocument extends Model
 {
-    use HasFactory;
+    use HasFactory, BelongsToEcole;
 
     protected $fillable = [
         'student_id',
@@ -16,6 +17,7 @@ class StudentDocument extends Model
         'file_path',
         'file_type',
         'file_size',
+        'ecole_id',
     ];
 
     public function student()

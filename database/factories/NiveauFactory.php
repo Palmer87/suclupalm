@@ -17,7 +17,8 @@ class NiveauFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'nom' => $this->faker->word,
+            'cycle_id' => \App\Models\Cycle::factory(),
         ];
     }
 }

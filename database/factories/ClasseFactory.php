@@ -17,7 +17,8 @@ class ClasseFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'nom' => $this->faker->bothify('Classe ##??'),
+            'niveau_id' => \App\Models\Niveau::factory(),
         ];
     }
 }

@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Traits\BelongsToEcole;
 
 class Enseignant extends Model
 {
+    use HasFactory, BelongsToEcole;
     protected $table = 'enseignants';
     protected $primaryKey = 'id';
     public $timestamps = true;//si on utilise les timestamps created_at et updated_at
@@ -17,8 +20,7 @@ class Enseignant extends Model
         'email',
         'specialite',
         'statut',
-
-
+        'ecole_id',
     ];
     public function user()
     {

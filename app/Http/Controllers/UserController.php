@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Ecole;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
-
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 
@@ -15,7 +16,15 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = \App\Models\User::all();
+        $query = User::with('ecole');
+
+        // Since we removed BelongsToEcole from User model (to avoid infinite loops)
+        // we must manually filter here for multi-tenant isolation.
+        if (auth()->check() && !auth()->user()->hasRole('Super Admin')) {
+            $query->where('ecole_id', auth()->user()->ecole_id);
+        }
+
+        $users = $query->get();
         return view('admin.utilisateur.index', compact('users'));
     }
 
@@ -24,7 +33,9 @@ class UserController extends Controller
      */
     public function create()
     {
-        //
+        $roles = Role::all();
+        $ecoles = Ecole::all();
+        return view('admin.utilisateur.create', compact('roles', 'ecoles'));
     }
 
     /**
@@ -32,7 +43,39 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-            //
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8|confirmed',
+            'role_id' => 'required|exists:roles,id',
+            'ecole_id' => [
+                'nullable',
+                Rule::requiredIf(function () use ($request) {
+                    $role = Role::find($request->role_id);
+                    return $role && $role->name !== 'Super Admin';
+                }),
+                'exists:ecoles,id'
+            ],
+        ]);
+
+        $ecoleId = $request->ecole_id;
+        
+        // Sécurité : Si l'utilisateur n'est pas Super Admin, on force son ecole_id
+        if (auth()->check() && !auth()->user()->hasRole('Super Admin')) {
+            $ecoleId = auth()->user()->ecole_id;
+        }
+
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'ecole_id' => $ecoleId,
+        ]);
+
+        $role = Role::findOrFail($request->role_id);
+        $user->assignRole($role);
+
+        return redirect()->route('admin.user.index')->with('success', 'Utilisateur créé avec succès.');
     }
 
     /**
@@ -40,7 +83,13 @@ class UserController extends Controller
      */
     public function show(string $id)
     {
-        $user = \App\Models\User::findOrFail($id);
+        $query = User::with('ecole');
+
+        if (auth()->check() && !auth()->user()->hasRole('Super Admin')) {
+            $query->where('ecole_id', auth()->user()->ecole_id);
+        }
+
+        $user = $query->findOrFail($id);
         return view('admin.utilisateur.show', compact('user'));
     }
 
@@ -50,8 +99,15 @@ class UserController extends Controller
     public function edit(string $id)
     {
         $roles = Role::all();
-        $user = \App\Models\User::findOrFail($id);
-        return view('admin.utilisateur.edit', compact('user', 'roles'));
+        $ecoles = Ecole::all();
+        
+        $query = User::query();
+        if (auth()->check() && !auth()->user()->hasRole('Super Admin')) {
+            $query->where('ecole_id', auth()->user()->ecole_id);
+        }
+
+        $user = $query->findOrFail($id);
+        return view('admin.utilisateur.edit', compact('user', 'roles', 'ecoles'));
     }
 
     /**
@@ -59,24 +115,38 @@ class UserController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $user = \App\Models\User::findOrFail($id);
+        $query = User::query();
+        if (auth()->check() && !auth()->user()->hasRole('Super Admin')) {
+            $query->where('ecole_id', auth()->user()->ecole_id);
+        }
+
+        $user = $query->findOrFail($id);
 
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
             'password' => ['nullable', 'string', 'min:8', 'confirmed'],
             'role_id' => ['required', 'exists:roles,id'],
+            'ecole_id' => [
+                'nullable',
+                Rule::requiredIf(function () use ($request) {
+                    $role = Role::find($request->role_id);
+                    return $role && $role->name !== 'Super Admin';
+                }),
+                'exists:ecoles,id'
+            ],
         ]);
 
-        $data = $request->except(['password', 'password_confirmation']);
+        $data = $request->except(['password', 'password_confirmation', 'role_id']);
 
         if ($request->filled('password')) {
             $data['password'] = Hash::make($request->password);
         }
-        $role = Role::findOrFail($request->role_id);
-        $user->syncRoles([$role]);
 
         $user->update($data);
+
+        $role = Role::findOrFail($request->role_id);
+        $user->syncRoles([$role]);
         
         return redirect()->route('admin.user.index')->with('success', 'Utilisateur modifié avec succès.');
     }
@@ -86,7 +156,12 @@ class UserController extends Controller
      */
     public function destroy(string $id)
     {
-        $user = \App\Models\User::findOrFail($id);
+        $query = User::query();
+        if (auth()->check() && !auth()->user()->hasRole('Super Admin')) {
+            $query->where('ecole_id', auth()->user()->ecole_id);
+        }
+
+        $user = $query->findOrFail($id);
         $user->delete();
         return redirect()->route('admin.user.index')->with('success', 'Utilisateur supprimé avec succès');  
     }

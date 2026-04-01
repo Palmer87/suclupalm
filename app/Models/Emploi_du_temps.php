@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\BelongsToEcole;
 
 class Emploi_du_temps extends Model
 {
+    use BelongsToEcole;
     protected $table = 'emploi_du_temps';
     protected $fillable = [
         'enseignant_id',
@@ -15,6 +17,7 @@ class Emploi_du_temps extends Model
         'annee_scolaire_id',
         'jours_id',
         'salle',
+        'ecole_id',
     ];
     public function classe()
     {

@@ -17,7 +17,12 @@ class ParentsFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'nom' => $this->faker->lastName,
+            'prenom' => $this->faker->firstName,
+            'email' => $this->faker->unique()->safeEmail,
+            'telephone' => $this->faker->phoneNumber,
+            'autre_telephone' => $this->faker->optional()->phoneNumber,
+            'adresse' => $this->faker->address,
         ];
     }
 }

@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\BelongsToEcole;
 
 class affectations_pedagogiques extends Model
 {
+    use BelongsToEcole;
     protected $table = 'affectations_pedagogiques';
 
     protected $fillable = [
@@ -13,6 +15,7 @@ class affectations_pedagogiques extends Model
         'matiere_id',
         'classe_id',
         'annee_scolaire_id',
+        'ecole_id',
     ];
         public function enseignant()
     {

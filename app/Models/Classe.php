@@ -4,14 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\BelongsToEcole;
 
 
   
 class Classe extends Model
 {
     /** @use HasFactory<\Database\Factories\ClasseFactory> */
-    use HasFactory;
-    protected $fillable = ['nom','niveau_id'];
+    use HasFactory, BelongsToEcole;
+    protected $fillable = ['nom','niveau_id', 'ecole_id'];
     public function niveau()
     {
         return $this->belongsTo(\App\Models\Niveau::class);

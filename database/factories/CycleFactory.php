@@ -17,7 +17,7 @@ class CycleFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'nom' => $this->faker->unique()->randomElement(['Primaire', 'Collège', 'Lycée']),
         ];
     }
 }

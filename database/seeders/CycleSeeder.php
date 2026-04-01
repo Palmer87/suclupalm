@@ -12,6 +12,9 @@ class CycleSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        $cycles = ['Primaire', 'Collège', 'Lycée'];
+        foreach ($cycles as $nom) {
+            \App\Models\Cycle::firstOrCreate(['nom' => $nom]);
+        }
     }
 }

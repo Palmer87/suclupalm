@@ -4,6 +4,7 @@ use App\Http\Controllers\AffectationsPedagogiquesController;
 use App\Http\Controllers\AnneeScolaireController;
 use App\Http\Controllers\AssignematiereController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\EcoleController;
 use App\Http\Controllers\EvaluationController;
 use App\Http\Controllers\NoteController;
 use App\Http\Controllers\PeriodeController;
@@ -27,9 +28,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+// Le dashboard est géré par DashboardController dans le groupe auth ci-dessous
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -47,7 +46,7 @@ Route::get('/student-details', function () {
 | ROUTES PROTÉGÉES
 |--------------------------------------------------------------------------
 */
-Route::middleware('auth', 'role:administrateur')->group(function () {
+Route::middleware('auth', 'role:Super Admin|admin|staff')->group(function () {
 
     /*
     |--------------------------------------------------------------------------
@@ -62,12 +61,6 @@ Route::middleware('auth', 'role:administrateur')->group(function () {
     | UTILISATEURS & RBAC (ADMIN)
     |--------------------------------------------------------------------------
     */
-    Route::middleware('role:administrateur')->group(function () {
-
-    });
-
-    Route::get('/users/{id}', [\App\Http\Controllers\UserController::class, 'show'])
-        ->name('users.show');
 
     /*
     |--------------------------------------------------------------------------
@@ -202,35 +195,24 @@ Route::middleware('auth', 'role:administrateur')->group(function () {
     Route::get('/payments/{payment}/receipt', [\App\Http\Controllers\PaymentController::class, 'receipt'])->name('admin.payments.receipt');
     Route::delete('/payments/{payment}', [\App\Http\Controllers\PaymentController::class, 'destroy'])->name('admin.payments.destroy');
 
-    Route::resource('frais_scolaires', \App\Http\Controllers\FraisScolaireController::class)->names('admin.frais_scolaires');
+    // frais_scolaires enregistré une seule fois en bas avec double alias
 
     /*
     |--------------------------------------------------------------------------
-    | ROLES
+    | ADMINISTRATION GLOBALE (SUPER ADMIN UNIQUEMENT)
     |--------------------------------------------------------------------------
     */
-    Route::resource('roles', RoleController::class)->names('admin.role');
+    Route::middleware('role:Super Admin')->group(function () {
+        Route::resource('roles', RoleController::class)->names('admin.role');
+        Route::resource('ecoles', EcoleController::class)->names('admin.ecole');
+        Route::resource('ecole-payments', \App\Http\Controllers\EcolePaymentController::class)->names('admin.ecole_payments');
+    });
     /*
     |--------------------------------------------------------------------------
     | UTILISATEURS
     |--------------------------------------------------------------------------
     */
     Route::resource('utilisateurs', UserController::class)->names('admin.user');
-    Route::get('/utilisateurs/{id}/edit', [UserController::class, 'edit'])->name('admin.user.edit');
-    Route::put('/utilisateurs/{id}', [UserController::class, 'update'])->name('admin.user.update');
-    Route::delete('/utilisateurs/{id}', [UserController::class, 'destroy'])->name('admin.user.destroy');
-    Route::get('/utilisateurs/{id}', [UserController::class, 'show'])->name('admin.user.show');
-    Route::get('/utilisateurs', [UserController::class, 'index'])->name('admin.user.index');
-    Route::get('/utilisateurs/create', [UserController::class, 'create'])->name('admin.user.create');
-
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | FRAIS SCOLAIRES
-    |--------------------------------------------------------------------------
-    */
-    Route::resource('frais_scolaires', FraisScolaireController::class)->names('frais_scolaires');
 
     /*
     |--------------------------------------------------------------------------
@@ -239,9 +221,14 @@ Route::middleware('auth', 'role:administrateur')->group(function () {
     */
     Route::get('/parametres', [DashboardController::class, 'parametres_scolaires'])->name('parametres_scolaires');
 
+    /*
+    |--------------------------------------------------------------------------
+    | FRAIS SCOLAIRES (nommé 'frais_scolaires.*' pour compatibilité vues)
+    |--------------------------------------------------------------------------
+    */
+    Route::resource('frais_scolaires', FraisScolaireController::class)->names('frais_scolaires');
 
-
-
+    // (Ancienne ligne ecoles supprimée car déplacée ci-dessus)
 });
 
 

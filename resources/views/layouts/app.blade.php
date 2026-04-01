@@ -73,26 +73,15 @@
                     <i class="fas fa-bars"></i>
                 </button>
             </div>
-            <!-- <div class="header-main-menu collapse navbar-collapse" id="mobile-navbar">
-                <ul class="navbar-nav">
-                    <li class="navbar-item header-search-bar">
-                        <div class="input-group stylish-input-group">
-                            <span class="input-group-addon">
-                                <button type="submit">
-                                    <span class="flaticon-search" aria-hidden="true"></span>
-                                </button>
-                            </span>
-                            <input type="text" class="form-control" placeholder="Find Something . . .">
-                        </div>
-                    </li>
-                </ul>
+             <div class="header-main-menu collapse navbar-collapse justify-content-end" id="mobile-navbar"  >
+             
                 <ul class="navbar-nav">
                     <li class="navbar-item dropdown header-admin">
                         <a class="navbar-nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown"
                             aria-expanded="false">
                             <div class="admin-title">
-                                <h5 class="item-title">Stevne Zone</h5>
-                                <span>Admin</span>
+                                <h5 class="item-title">{{ Auth::user()->name }}</h5>
+                                <span>{{ Auth::user()->role }}</span>
                             </div>
                             <div class="admin-img">
                                 <img src="img/figure/admin.jpg" alt="Admin">
@@ -100,90 +89,33 @@
                         </a>
                         <div class="dropdown-menu dropdown-menu-right">
                             <div class="item-header">
-                                <h6 class="item-title">Steven Zone</h6>
+                                <h6 class="item-title">{{ Auth::user()->name }}</h6>
                             </div>
                             <div class="item-content">
                                 <ul class="settings-list">
-                                    <li><a href="#"><i class="flaticon-user"></i>My Profile</a></li>
-                                    <li><a href="#"><i class="flaticon-list"></i>Task</a></li>
+                                    <li><a href="#"><i class="flaticon-user"></i>Mon Profil</a></li>
+                                    <li><a href="#"><i class="flaticon-list"></i>Tâches</a></li>
                                     <li><a href="#"><i
                                                 class="flaticon-chat-comment-oval-speech-bubble-with-text-lines"></i>Message</a>
                                     </li>
-                                    <li><a href="#"><i class="flaticon-gear-loading"></i>Account Settings</a></li>
-                                    <li><a href="login.html"><i class="flaticon-turn-off"></i>Log Out</a></li>
+                                    @if(auth()->user()->hasRole('Super Admin'))
+                                    <li><a href="{{ route('admin.user.edit', Auth::user()->id) }}"><i class="flaticon-gear-loading"></i>Paramètres du compte</a></li>
+                                    @endif
+                                    
+                                    <form id="logout-form" method="POST" action="{{ route('logout') }}" style="display: none;">
+                                        @csrf
+                                    </form>
+                                    <li>
+                                        <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                            <i class="flaticon-turn-off"></i>Se déconnecter
+                                        </a>
+                                    </li>
                                 </ul>
                             </div>
                         </div>
                     </li>
-                    <li class="navbar-item dropdown header-message">
-                        <a class="navbar-nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown"
-                            aria-expanded="false">
-                            <i class="far fa-envelope"></i>
-                            <div class="item-title d-md-none text-16 mg-l-10">Message</div>
-                            <span>5</span>
-                        </a>
-
-                        <div class="dropdown-menu dropdown-menu-right">
-                            <div class="item-header">
-                                <h6 class="item-title">05 Message</h6>
-                            </div>
-                            <div class="item-content">
-                                <div class="media">
-                                    <div class="item-img bg-skyblue author-online">
-                                        <img src="img/figure/student11.png" alt="img">
-                                    </div>
-                                    <div class="media-body space-sm">
-                                        <div class="item-title">
-                                            <a href="#">
-                                                <span class="item-name">Maria Zaman</span>
-                                                <span class="item-time">18:30</span>
-                                            </a>
-                                        </div>
-                                        <p>What is the reason of buy this item.
-                                            Is it usefull for me.....</p>
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
-                    </li>
-                    <li class="navbar-item dropdown header-notification">
-                        <a class="navbar-nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown"
-                            aria-expanded="false">
-                            <i class="far fa-bell"></i>
-                            <div class="item-title d-md-none text-16 mg-l-10">Notification</div>
-                            <span>8</span>
-                        </a>
-
-                        <div class="dropdown-menu dropdown-menu-right">
-                            <div class="item-header">
-                                <h6 class="item-title">03 Notifiacations</h6>
-                            </div>
-                            <div class="item-content">
-                                <div class="media">
-                                    <div class="item-icon bg-skyblue">
-                                        <i class="fas fa-check"></i>
-                                    </div>
-                                    <div class="media-body space-sm">
-                                        <div class="post-title">Complete Today Task</div>
-                                        <span>1 Mins ago</span>
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
-                    </li>
-                    <li class="navbar-item dropdown header-language">
-                        <a class="navbar-nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown"
-                            aria-expanded="false"><i class="fas fa-globe-americas"></i>EN</a>
-                        <div class="dropdown-menu dropdown-menu-right">
-                            <a class="dropdown-item" href="#">English</a>
-                            <a class="dropdown-item" href="#">Franchis</a>
-
-                        </div>
-                    </li>
                 </ul>
-            </div> -->
+            </div> 
         </div>
         <!-- Header Menu Area End Here -->
         <!-- Page Area Start Here -->
@@ -197,52 +129,59 @@
                 </div>
                 <div class="sidebar-menu-content">
                     <ul class="nav nav-sidebar-menu sidebar-toggle-view">
+                        @role('Super Admin')
+                        {{-- MENU SUPER ADMIN --}}
+                        <li class="nav-item text-muted px-3 mt-3 mb-1" style="font-size: 10px; text-transform: uppercase; letter-spacing: 1px; font-weight: 800;">
+                            Architecture Plateforme
+                        </li>
                         <li class="nav-item">
-                            <a href="{{ route('dashboard') }}" class="nav-link"><i
-                                    class="flaticon-calendar"></i><span>Tableau de bord</span></a>
-
+                            <a href="{{ route('dashboard') }}" class="nav-link"><i class="fas fa-chart-line"></i><span>Monitoring Global</span></a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.ecole.index') }}" class="nav-link"><i class="fas fa-school"></i><span>Gestion Écoles</span></a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.ecole_payments.index') }}" class="nav-link"><i class="fas fa-file-invoice-dollar"></i><span>Paiements Écoles</span></a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.role.index') }}" class="nav-link"><i class="fas fa-user-shield"></i><span>Rôles & Permissions</span></a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.user.index') }}" class="nav-link"><i class="fas fa-users-cog"></i><span>Utilisateurs Globaux</span></a>
+                        </li>
+                        @else
+                        {{-- MENU SCOLAIRE (ADMIN ÉCOLE & STAFF) --}}
+                        <li class="nav-item">
+                            <a href="{{ route('dashboard') }}" class="nav-link"><i class="flaticon-calendar"></i><span>Tableau de bord</span></a>
                         </li>
                         <li class="nav-item sidebar-nav-item">
                             <a href="#" class="nav-link"><i class="flaticon-classmates"></i><span>Élèves</span></a>
                             <ul class="nav sub-group-menu">
                                 <li class="nav-item">
-                                    <a href="{{ route('admin.etudiant.index') }}" class="nav-link"><i
-                                            class="fas fa-angle-right"></i>Tous les élèves</a>
-                                </li>
-
-                                <li class="nav-item">
-                                    <a href="{{ route('admin.etudiant.create') }}" class="nav-link"><i
-                                            class="fas fa-angle-right"></i>Ajouter un élève</a>
+                                    <a href="{{ route('admin.etudiant.index') }}" class="nav-link"><i class="fas fa-angle-right"></i>Tous les élèves</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="{{ route('admin.inscription.create') }}" class="nav-link"><i
-                                            class="fas fa-angle-right"></i>Inscription d'un élève</a>
+                                    <a href="{{ route('admin.etudiant.create') }}" class="nav-link"><i class="fas fa-angle-right"></i>Ajouter un élève</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="{{ route('admin.inscription.index') }}" class="nav-link"><i
-                                            class="fas fa-angle-right"></i>Tous les inscriptions</a>
+                                    <a href="{{ route('admin.inscription.create') }}" class="nav-link"><i class="fas fa-angle-right"></i>Inscription d'un élève</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.inscription.index') }}" class="nav-link"><i class="fas fa-angle-right"></i>Toutes les inscriptions</a>
                                 </li>
                             </ul>
                         </li>
-
                         <li class="nav-item sidebar-nav-item">
-                            <a href="#" class="nav-link"><i
-                                    class="flaticon-multiple-users-silhouette"></i><span>Enseignants</span></a>
+                            <a href="#" class="nav-link"><i class="flaticon-multiple-users-silhouette"></i><span>Enseignants</span></a>
                             <ul class="nav sub-group-menu">
                                 <li class="nav-item">
-                                    <a href="{{ route('admin.enseignant.index') }}" class="nav-link"><i
-                                            class="fas fa-angle-right"></i>Tous les
-                                        enseignants</a>
+                                    <a href="{{ route('admin.enseignant.index') }}" class="nav-link"><i class="fas fa-angle-right"></i>Tous les enseignants</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="{{ route('admin.enseignant.create') }}" class="nav-link"><i
-                                            class="fas fa-angle-right"></i>Ajouter un enseignant
-                                    </a>
+                                    <a href="{{ route('admin.enseignant.create') }}" class="nav-link"><i class="fas fa-angle-right"></i>Ajouter un enseignant</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="{{ route('admin.affectation.create') }}" class="nav-link"><i
-                                            class="fas fa-angle-right"></i>Affecter un enseignant a une classe
-                                    </a>
+                                    <a href="{{ route('admin.affectation.create') }}" class="nav-link"><i class="fas fa-angle-right"></i>Affecter à une classe</a>
                                 </li>
                             </ul>
                         </li>
@@ -250,60 +189,40 @@
                             <a href="#" class="nav-link"><i class="flaticon-technological"></i><span>Parents</span></a>
                             <ul class="nav sub-group-menu">
                                 <li class="nav-item">
-                                    <a href="{{ route('admin.parent.index') }}" class="nav-link"><i
-                                            class="fas fa-angle-right"></i>Tous les
-                                        parents</a>
+                                    <a href="{{ route('admin.parent.index') }}" class="nav-link"><i class="fas fa-angle-right"></i>Tous les parents</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="{{ route('admin.parent.create') }}" class="nav-link"><i
-                                            class="fas fa-angle-right"></i>Ajouter un parent</a>
+                                    <a href="{{ route('admin.parent.create') }}" class="nav-link"><i class="fas fa-angle-right"></i>Ajouter un parent</a>
                                 </li>
-
                             </ul>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ route('admin.emploi_du_temps.index') }}" class="nav-link"><i
-                                    class="flaticon-calendar"></i><span>Emploi du temps</span></a>
+                            <a href="{{ route('admin.emploi_du_temps.index') }}" class="nav-link"><i class="flaticon-calendar"></i><span>Emploi du temps</span></a>
                         </li>
                         <li class="nav-item">
-                            <a href="#" class="nav-link"><i class="flaticon-checklist"></i><span>Attendence</span></a>
+                            <a href="{{ route('admin.evaluations.index') }}" class="nav-link"><i class="flaticon-shopping-list"></i><span>Évaluations</span></a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ route('admin.evaluations.index') }}" class="nav-link"><i
-                                    class="flaticon-shopping-list"></i><span>Evaluation</span></a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('admin.bulletins.index') }}" class="nav-link"><i
-                                    class="flaticon-script"></i><span>Bulletins</span></a>
+                            <a href="{{ route('admin.bulletins.index') }}" class="nav-link"><i class="flaticon-script"></i><span>Bulletins</span></a>
                         </li>
                         <li class="nav-item sidebar-nav-item">
-                            <a href="#" class="nav-link"><i
-                                    class="flaticon-technological"></i><span>Comptabilité</span></a>
+                            <a href="#" class="nav-link"><i class="flaticon-technological"></i><span>Comptabilité</span></a>
                             <ul class="nav sub-group-menu">
                                 <li class="nav-item">
-                                    <a href="{{ route('admin.factures.index') }}" class="nav-link"><i
-                                            class="fas fa-angle-right"></i>Factures & Paiements</a>
+                                    <a href="{{ route('admin.factures.index') }}" class="nav-link"><i class="fas fa-angle-right"></i>Factures & Paiements</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="{{ route('frais_scolaires.index') }}" class="nav-link"><i
-                                            class="fas fa-angle-right"></i>Configuration Frais</a>
+                                    <a href="{{ route('frais_scolaires.index') }}" class="nav-link"><i class="fas fa-angle-right"></i>Configuration Frais</a>
                                 </li>
                             </ul>
                         </li>
-
-
                         <li class="nav-item">
-                            <a href="{{ route('admin.role.index') }}" class="nav-link"><i
-                                    class="flaticon-chat"></i><span>Rôles</span></a>
+                            <a href="{{ route('admin.user.index') }}" class="nav-link"><i class="fas fa-users"></i><span>Utilisateurs</span></a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ route('admin.user.index') }}" class="nav-link"><i
-                                    class="flaticon-menu-1"></i><span>Utilisateurs</span></a>
+                            <a href="{{ route('parametres_scolaires') }}" class="nav-link"><i class="fas fa-cogs"></i><span>Paramètres scolaires</span></a>
                         </li>
-                        <li class="nav-item">
-                            <a href="{{ route('parametres_scolaires') }}" class="nav-link"><i
-                                    class="flaticon-menu-1"></i><span>Paramètres scolaires</span></a>
-                        </li>
+                        @endrole
                         <!-- <li class="nav-item sidebar-nav-item">
                             <a href="#" class="nav-link"><i class="flaticon-menu-1"></i><span>UI Elements</span></a>
                             <ul class="nav sub-group-menu">

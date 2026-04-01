@@ -16,8 +16,12 @@ class AnneeScolaireFactory extends Factory
      */
     public function definition(): array
     {
+        $year = $this->faker->unique()->numberBetween(2023, 2026);
         return [
-            //
+            'annee' => $year . '-' . ($year + 1),
+            'date_debut' => $year . '-09-01',
+            'date_fin' => ($year + 1) . '-06-30',
+            'status' => 'active',
         ];
     }
 }

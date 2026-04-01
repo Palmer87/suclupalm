@@ -20,12 +20,27 @@ class DatabaseSeeder extends Seeder
             CycleSeeder::class,
             NiveauSeeder::class,
             ClasseSeeder::class,
+            AnneeScolaireSeeder::class,
             ParentsSeeder::class,
+            RelationSeeder::class,
             StudentSeeder::class,
             InscriptionSeeder::class,
-            AnneeScolaireSeeder::class,
+            MatiereSeeder::class,
+            EnseignantSeeder::class,
+            AffectationPedagogiqueSeeder::class,
+            PeriodeSeeder::class,
+            EvaluationSeeder::class,
             JourSeeder::class,
             HoraireSeeder::class,
         ]);
+
+        // Créer un utilisateur administrateur de test
+        $admin = \App\Models\User::firstOrCreate([
+            'email' => 'admin@admin.com',
+        ], [
+            'name' => 'Admin Test',
+            'password' => \Illuminate\Support\Facades\Hash::make('password'),
+        ]);
+        $admin->assignRole('admin');
     }
 }

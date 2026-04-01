@@ -12,6 +12,6 @@ class ParentsSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        \App\Models\Parents::factory()->count(20)->create();
     }
 }

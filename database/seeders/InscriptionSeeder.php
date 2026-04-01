@@ -12,6 +12,28 @@ class InscriptionSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        $students = \App\Models\Student::all();
+        $classes = \App\Models\Classe::all();
+        $anneeScolaire = \App\Models\Annee_scolaire::where('status', 'active')->first();
+
+        if (!$anneeScolaire) return;
+
+        foreach ($students as $student) {
+            $classe = $classes->random();
+            $niveau = $classe->niveau;
+            $cycle = $niveau ? $niveau->cycle : null;
+
+            if ($niveau && $cycle) {
+                \App\Models\inscription::updateOrCreate([
+                    'student_id' => $student->id,
+                    'annee_scolaire_id' => $anneeScolaire->id,
+                ], [
+                    'cycle_id' => $cycle->id,
+                    'niveau_id' => $niveau->id,
+                    'classe_id' => $classe->id,
+                    'status' => 'inscrite',
+                ]);
+            }
+        }
     }
 }

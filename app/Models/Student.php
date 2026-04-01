@@ -4,11 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\BelongsToEcole;
 
 class Student extends Model
 {
     /** @use HasFactory<\Database\Factories\StudentFactory> */
-    use HasFactory;
+    use HasFactory, BelongsToEcole;
 
 
     // Notes de l'élève
@@ -25,6 +26,7 @@ class Student extends Model
         'address',
         'status',
         'photo',
+        'ecole_id',
     ];
     private function generateMatricule()
     {

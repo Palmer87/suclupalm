@@ -3,15 +3,18 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\BelongsToEcole;
 
 class Facture extends Model
 {
+    use BelongsToEcole;
     protected $fillable = [
         'inscription_id',
         'montant_total',
         'reste',
         'statut',
         'date_echeance',
+        'ecole_id',
     ];
 
     public function inscription()

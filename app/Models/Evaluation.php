@@ -3,12 +3,13 @@
 namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Traits\BelongsToEcole;
 
 
 
 class Evaluation extends Model
 {
-    use HasFactory;
+    use HasFactory, BelongsToEcole;
     protected $fillable = [
         'classe_id',
         'matiere_id',
@@ -20,6 +21,7 @@ class Evaluation extends Model
         'date_evaluation',
         'libelle',
         'periode_id',
+        'ecole_id',
     ];
 
     /* ================= RELATIONS ================= */

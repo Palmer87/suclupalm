@@ -32,3 +32,22 @@
 ## 7. Audit Général - [TERMINÉ]
 - [x] Vérifier la validation des données dans tous les contrôleurs (StoreRequest/UpdateRequest).
 - [ ] Uniformiser les interfaces (Blade) avec Tailwind/CSS pour une expérience premium.
+
+
+## 8. Roadmap Transition SaaS (Multi-tenancy) - [A PLANIFIER]
+- [ ] **Architecture de Multi-location :** 
+    - Décider entre "Single Database with ecole_id" 
+- [ ] **Modification de la Base de Données :**
+    - Créer la table `ecoles` (pour stocker les informations des écoles et leurs domaines).
+    - Ajouter une colonne `ecole_id` à toutes les entités clés existant
+- [ ] **Isolement des Données :**
+    - Implémenter des Global Scopes sur les modèles pour filtrer par `ecole_id` automatiquement.
+- [ ] **Gestion des Domaines :**
+    - Configurer la détection dynamique d'une ecole  via sous-domaine (ex: ecole1.sgs.com).
+- [ ] **Système d'Abonnement (Monétisation) :**
+    - Intégrer `Laravel Cashier (Stripe)` pour les abonnements B2B des écoles.
+    - Gérer les limites de ressources par plan (ex: Max 500 élèves pour le Plan Basic).
+- [ ] **Dashboard Super Admin :**
+    - Créer une interface pour gérer les instances d'écoles, voir les factures d'abonnement et suspendre des accès.
+- [ ] **Migration des fichiers :**
+    - Adapter les disques de stockage pour séparer les uploads par dossier tenant.
