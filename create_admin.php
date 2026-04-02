@@ -20,4 +20,4 @@ DB::transaction(function() {
     $user->assignRole('Super Admin');
 });
 
-echo "Admin user created successfully: admin_user@example.com / password\n";
+echo "super a user created successfully: admin_user@example.com / password\n";

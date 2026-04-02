@@ -1,162 +1,86 @@
 @extends('layouts.app')
+@section('title', 'Tableau de bord - Akkhor Theme')
+
 @section('content')
-
-    <!-- Breadcrumbs Area Start Here -->
-    <div class="breadcrumbs-area">
-        <h3>Tableau de bord administrateur</h3>
-        <ul>
-            <li>
-                <a href="{{ route('dashboard') }}">Accueil</a>
-            </li>
-            <li>Tableau de bord</li>
-        </ul>
-    </div>
-    <!-- Breadcrumbs Area End Here -->
-
-    <!-- Active Year Banner -->
-    @if($anneeActive)
-    <div class="alert mg-b-20 sidebar-color" style=" color: #fff; border: none; border-radius: 10px; padding: 15px 20px;">
-        <div class="d-flex align-items-center justify-content-between flex-wrap">
-            <div>
-                <i class="fas fa-calendar-alt mg-r-10"></i>
-                <strong>Année scolaire active :</strong> {{ $anneeActive->annee }}
-                <span class="mg-l-10" style="opacity: 0.8;">
-                    ({{ \Carbon\Carbon::parse($anneeActive->date_debut)->format('d/m/Y') }} - {{ \Carbon\Carbon::parse($anneeActive->date_fin)->format('d/m/Y') }})
-                </span>
+<div class="breadcrumbs-area mx-3 mt-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h3 class="mb-1 font-weight-900" style="color: #111111;">Tableau de bord</h3>
+            <ul class="d-flex align-items-center p-0" style="list-style: none; font-size: 0.9rem;">
+                <li><a href="{{ route('dashboard') }}" class="text-muted">Tableau de bord</a></li>
+                <li class="mx-2 text-muted">/</li>
+                <li class="text-orange-peel font-bold">Administrateur</li>
+            </ul>
+        </div>
+        <div class="header-elements">
+            <!-- Session Active Indicator -->
+            @if($anneeActive)
+            <div class=" bg-light-green text-dark-pastel-green px-4 py-2 rounded-pill font-bold size-15">
+                <i class="fas fa-calendar-check mr-2"></i> Session {{ $anneeActive->annee }}
             </div>
-            <span class="badge" style="background-color: rgba(255,255,255,0.25); color: #fff; padding: 5px 15px; border-radius: 20px;">
-                <i class="fas fa-check-circle mg-r-5"></i> Active
-            </span>
+            @endif
         </div>
     </div>
-    @else
-    <div class="alert alert-warning mg-b-20" style="border-radius: 10px; background: #0e0949e8; color: #fff; border: none; border-radius: 10px; padding: 15px 20px;">
-        <i class="fas fa-exclamation-triangle mg-r-10"></i>
-        <strong>Attention :</strong> Aucune année scolaire active.
-        <a href="{{ route('admin.annee.create') }}" class="alert-link">Créer une année scolaire</a>.
-    </div>
-    @endif
+</div>
 
-    <!-- Financial Summary Cards -->
-    <div class="row gutters-20">
-        <div class="col-xl-3 col-sm-6 col-12">
-            <div class="dashboard-summery-one mg-b-20">
-                <div class="row align-items-center">
-                    <div class="col-6">
-                        <div class="item-icon bg-light-green">
-                            <i class="flaticon-money text-green"></i>
+<div class="container-fluid mt-4">
+    <!-- Academic Pulse Statistics -->
+    <div class="row mb-5">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="akkhor-stat-box blue shadow-sm">
+                <div class="card-body p-4 bg-white border-radius-15">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="stat-icon bg-light-blue text-blue-sky">
+                            <i class="flaticon-classmates"></i>
                         </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="item-content">
-                            <div class="item-title">Total Encaissé</div>
-                            <div class="item-number"><span>{{ number_format($totalEncasse, 0, ',', ' ') }} FCFA</span></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-3 col-sm-6 col-12">
-            <div class="dashboard-summery-one mg-b-20">
-                <div class="row align-items-center">
-                    <div class="col-6">
-                        <div class="item-icon bg-light-red">
-                            <i class="flaticon-shopping-basket text-red"></i>
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="item-content">
-                            <div class="item-title">Reste à Percevoir</div>
-                            <div class="item-number"><span>{{ number_format($resteAPercevoir, 0, ',', ' ') }} FCFA</span></div>
+                        <div class="text-right">
+                            <div class="text-muted small text-uppercase font-bold tracking-1">Étudiants</div>
+                            <h2 class="mb-0 font-weight-900 text-dark-blue counter" data-num="{{ $students }}">{{ $students }}</h2>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        
-        <!-- Alerts for Overdue Invoices -->
-        @if($overdueInvoices->count() > 0)
-        <div class="col-xl-6 col-12">
-            <div class="alert alert-danger mg-b-20" style="border-radius: 10px; border: none; padding: 15px 20px;">
-                <div class="d-flex align-items-center justify-content-between">
-                    <div>
-                        <i class="fas fa-exclamation-circle mg-r-10"></i>
-                        <strong>Alertes :</strong> {{ $overdueInvoices->count() }} factures en retard !
-                    </div>
-                    <button type="button" class="btn btn-xs btn-outline-danger" data-toggle="modal" data-target="#overdueModal">
-                        Voir les détails
-                    </button>
-                </div>
-            </div>
-        </div>
-        @endif
-    </div>
-
-    <!-- Dashboard Summary Cards Start Here -->
-    <div class="row gutters-20">
-        <div class="col-xl-3 col-sm-6 col-12">
-            <div class="dashboard-summery-one mg-b-20">
-                <div class="row align-items-center">
-                    <div class="col-6">
-                        <div class="item-icon bg-light-green">
-                            <i class="flaticon-classmates text-green"></i>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="akkhor-stat-box green shadow-sm">
+                <div class="card-body p-4 bg-white border-radius-15">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="stat-icon bg-light-green text-dark-pastel-green">
+                            <i class="flaticon-multiple-users-silhouette"></i>
                         </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="item-content">
-                            <div class="item-title">Élèves</div>
-                            <div class="item-number"><span class="counter" data-num="{{ $students }}">{{ $students }}</span></div>
+                        <div class="text-right">
+                            <div class="text-muted small text-uppercase font-bold tracking-1">Enseignants</div>
+                            <h2 class="mb-0 font-weight-900 text-dark-blue counter" data-num="{{ $teachers }}">{{ $teachers }}</h2>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-xl-3 col-sm-6 col-12">
-            <div class="dashboard-summery-one mg-b-20">
-                <div class="row align-items-center">
-                    <div class="col-6">
-                        <div class="item-icon bg-light-blue">
-                            <i class="flaticon-multiple-users-silhouette text-blue"></i>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="akkhor-stat-box yellow shadow-sm">
+                <div class="card-body p-4 bg-white border-radius-15">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="stat-icon bg-light-yellow text-orange-peel">
+                            <i class="flaticon-books"></i>
                         </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="item-content">
-                            <div class="item-title">Enseignants</div>
-                            <div class="item-number"><span class="counter" data-num="{{ $teachers }}">{{ $teachers }}</span></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-3 col-sm-6 col-12">
-            <div class="dashboard-summery-one mg-b-20">
-                <div class="row align-items-center">
-                    <div class="col-6">
-                        <div class="item-icon bg-light-yellow">
-                            <i class="flaticon-couple text-orange"></i>
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="item-content">
-                            <div class="item-title">Parents</div>
-                            <div class="item-number"><span class="counter" data-num="{{ $dashboardParents }}">{{ $dashboardParents }}</span></div>
+                        <div class="text-right">
+                            <div class="text-muted small text-uppercase font-bold tracking-1">Classes</div>
+                            <h2 class="mb-0 font-weight-900 text-dark-blue counter" data-num="{{ $dashboardClasses }}">{{ $dashboardClasses }}</h2>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-xl-3 col-sm-6 col-12">
-            <div class="dashboard-summery-one mg-b-20">
-                <div class="row align-items-center">
-                    <div class="col-6">
-                        <div class="item-icon bg-light-red">
-                            <i class="flaticon-books text-red"></i>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="akkhor-stat-box red shadow-sm">
+                <div class="card-body p-4 bg-white border-radius-15">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="stat-icon bg-light-red text-orange-red">
+                            <i class="flaticon-shopping-list text-red"></i>
                         </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="item-content">
-                            <div class="item-title">Classes</div>
-                            <div class="item-number"><span class="counter" data-num="{{ $dashboardClasses }}">{{ $dashboardClasses }}</span></div>
+                        <div class="text-right">
+                            <div class="text-muted small text-uppercase font-bold tracking-1">Inscriptions</div>
+                            <h2 class="mb-0 font-weight-900 text-dark-blue counter" data-num="{{ $inscriptionsCount }}">{{ $inscriptionsCount }}</h2>
                         </div>
                     </div>
                 </div>
@@ -164,417 +88,174 @@
         </div>
     </div>
 
-    <!-- Second Row of Summary Cards -->
-    <div class="row gutters-20">
-        <div class="col-xl-3 col-sm-6 col-12">
-            <div class="dashboard-summery-one mg-b-20">
-                <div class="row align-items-center">
-                    <div class="col-6">
-                        <div class="item-icon bg-light-green">
-                            <i class="flaticon-shopping-list text-green"></i>
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="item-content">
-                            <div class="item-title">Inscriptions</div>
-                            <div class="item-number"><span class="counter" data-num="{{ $inscriptionsCount }}">{{ $inscriptionsCount }}</span></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-3 col-sm-6 col-12">
-            <div class="dashboard-summery-one mg-b-20">
-                <div class="row align-items-center">
-                    <div class="col-6">
-                        <div class="item-icon bg-light-blue">
-                            <i class="flaticon-checklist text-blue"></i>
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="item-content">
-                            <div class="item-title">Évaluations</div>
-                            <div class="item-number"><span class="counter" data-num="{{ $evaluationsCount }}">{{ $evaluationsCount }}</span></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-3 col-sm-6 col-12">
-            <div class="dashboard-summery-one mg-b-20">
-                <div class="row align-items-center">
-                    <div class="col-6">
-                        <div class="item-icon bg-light-yellow">
-                            <i class="flaticon-technological text-orange"></i>
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="item-content">
-                            <div class="item-title">Matières</div>
-                            <div class="item-number"><span class="counter" data-num="{{ $matieresCount }}">{{ $matieresCount }}</span></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-3 col-sm-6 col-12">
-            <div class="dashboard-summery-one mg-b-20">
-                <div class="row align-items-center">
-                    <div class="col-6">
-                        <div class="item-icon bg-light-red">
-                            <i class="flaticon-maths-class-materials-cross-of-a-pencil-and-a-ruler text-red"></i>
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="item-content">
-                            <div class="item-title">Niveaux</div>
-                            <div class="item-number"><span class="counter" data-num="{{ $niveauxCount }}">{{ $niveauxCount }}</span></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Dashboard Summary Cards End Here -->
-
-    <!-- Charts Row Start Here -->
-    <div class="row gutters-20">
-        <!-- Students Distribution Chart -->
-        <div class="col-12 col-xl-6 col-6-xxxl">
-            <div class="card dashboard-card-three pd-b-20 mg-b-20">
-                <div class="card-body">
-                    <div class="heading-layout1">
+    <!-- Financial Pulse & Secondary Summaries Row -->
+    <div class="row mb-5">
+        <!-- Financial Summaries Section -->
+        <div class="col-xl-7 col-12">
+            <div class="card border-none shadow-akkhor border-radius-10 h-100">
+                <div class="card-body py-4 px-5">
+                    <div class="heading-layout1 mb-4 d-flex justify-content-between align-items-center">
                         <div class="item-title">
-                            <h3>Répartition des élèves par sexe</h3>
+                            <h3 class="font-bold text-dark-medium"><i class="fas fa-hand-holding-usd text-dark-pastel-green mr-3"></i>Indicateurs Financiers</h3>
                         </div>
-                        <div class="dropdown">
-                            <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown"
-                                aria-expanded="false">...</a>
-                            <div class="dropdown-menu dropdown-menu-right">
-                                <a class="dropdown-item" href="{{ route('admin.etudiant.index') }}"><i
-                                        class="fas fa-eye text-dark-pastel-green"></i>Voir tous</a>
-                                <a class="dropdown-item" href="{{ route('admin.etudiant.create') }}"><i
-                                        class="fas fa-plus text-orange-peel"></i>Ajouter</a>
+                        <a href="{{ route('frais_scolaires.index') }}" class="btn-fill-lmd text-light bg-true-v font-bold shadow-none border-none py-2 px-3 rounded small rounded-pill">
+                            DÉTAILS FINANCIERS
+                        </a>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col-md-6 mb-4">
+                            <div class="finance-card green shadow-sm p-4 border-radius-10">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <div class="text-white small font-bold opacity-75">TOTAL ENCAISSÉ</div>
+                                        <h3 class="text-white font-weight-900 mb-0 mt-2">{{ number_format($totalEncasse, 0, ',', ' ') }} FCFA</h3>
+                                    </div>
+                                   
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <div class="finance-card red shadow-sm p-4 border-radius-10">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <div class="text-white small font-bold opacity-75">RESTE À PERCEVOIR</div>
+                                        <h3 class="text-white font-weight-900 mb-0 mt-2">{{ number_format($resteAPercevoir, 0, ',', ' ') }} FCFA</h3>
+                                    </div>
+                                    
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="doughnut-chart-wrap">
-                        <canvas id="student-doughnut-chart" width="100" height="300"></canvas>
-                    </div>
-                    <div class="student-report">
-                        <div class="student-count pseudo-bg-blue">
-                            <h4 class="item-title">Filles</h4>
-                            <div class="item-number"><span class="counter" data-num="{{ $femaleStudents }}">{{ $femaleStudents }}</span></div>
-                        </div>
-                        <div class="student-count pseudo-bg-yellow">
-                            <h4 class="item-title">Garçons</h4>
-                            <div class="item-number"><span class="counter" data-num="{{ $maleStudents }}">{{ $maleStudents }}</span></div>
+                    @if($overdueInvoices->count() > 0)
+                    <div class="mt-2 text-center">
+                        <div class="alert bg-light-red text-orange-red border-radius-pill py-3 px-4 d-inline-block font-bold shadow-none" style="border: 1px dashed #ff0000; cursor: pointer;" data-toggle="modal" data-target="#overdueModal">
+                            <i class="fas fa-exclamation-triangle mr-2"></i> {{ $overdueInvoices->count() }} factures en retard de paiement
                         </div>
                     </div>
+                    @endif
                 </div>
             </div>
         </div>
 
-        <!-- Inscriptions by Cycle Chart -->
-        <div class="col-12 col-xl-6 col-6-xxxl">
-            <div class="card dashboard-card-one pd-b-20 mg-b-20">
-                <div class="card-body">
-                    <div class="heading-layout1">
+        <!-- Academic Summaries Column -->
+        <div class="col-xl-5 col-12 mt-4 mt-xl-0">
+            <div class="card border-none shadow-akkhor border-radius-10 h-100">
+                <div class="card-body py-4 px-5">
+                    <div class="heading-layout1 mb-4">
                         <div class="item-title">
-                            <h3>Inscriptions par cycle</h3>
-                        </div>
-                        <div class="dropdown">
-                            <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown"
-                                aria-expanded="false">...</a>
-                            <div class="dropdown-menu dropdown-menu-right">
-                                <a class="dropdown-item" href="{{ route('admin.inscription.index') }}"><i
-                                        class="fas fa-eye text-dark-pastel-green"></i>Voir toutes</a>
-                                <a class="dropdown-item" href="{{ route('admin.inscription.create') }}"><i
-                                        class="fas fa-plus text-orange-peel"></i>Nouvelle inscription</a>
-                            </div>
+                            <h3 class="font-bold text-dark-medium"><i class="fas fa-layer-group text-blue-ky mr-3"></i>Synthèse Académique</h3>
                         </div>
                     </div>
-                    <div class="earning-chart-wrap" style="min-height: 300px;">
-                        <canvas id="inscriptions-cycle-chart" width="100" height="300"></canvas>
+                    <div class="row mt-4">
+                        <div class="col-6 mb-4 text-center border-right">
+                            <div class="text-muted small text-uppercase font-bold mb-1 opacity-75 letter-spacing-1">Évaluations</div>
+                            <h3 class="font-weight-900 text-dark-medium mb-0">{{ $evaluationsCount }}</h3>
+                            <div class="badge-akkhor bg-light-blue text-blue-sky px-3 py-1 rounded-pill small mt-2 font-bold">{{ $evaluationsEnAttente }} en attente</div>
+                        </div>
+                        <div class="col-6 mb-4 text-center">
+                            <div class="text-muted small text-uppercase font-bold mb-1 opacity-75 letter-spacing-1">Matières</div>
+                            <h3 class="font-weight-900 text-dark-medium mb-0">{{ $matieresCount }}</h3>
+                            <div class="badge-akkhor bg-light-yellow text-orange-peel px-3 py-1 rounded-pill small mt-2 font-bold">{{ $niveauxCount }} Niveaux</div>
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-3 border-top-akkhor">
+                        <a href="{{ route('parametres_scolaires') }}" class="btn-fill-lmd font-bold text-light bg-dodger-blue btn-block mb-1 shadow-none rounded-pill py-3">
+                            <i class="fas fa-cog mr-2"></i> Paramètres Scolaires & Gestion
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Tables Row -->
-    <div class="row gutters-20">
-
-        <!-- Recent Students Table -->
-        <div class="col-12 col-xl-6 col-6-xxxl">
-            <div class="card mg-b-20">
-                <div class="card-body">
-                    <div class="heading-layout1">
-                        <div class="item-title">
-                            <h3>Derniers élèves inscrits</h3>
-                        </div>
-                        <div>
-                            <a href="{{ route('admin.etudiant.index') }}" class="btn btn-sm btn-outline-primary">
-                                <i class="fas fa-list"></i> Voir tous
-                            </a>
-                        </div>
+    <!-- Charts Section (Primary Distribution) -->
+    <div class="row mb-5">
+        <!-- Gender Mapping -->
+        <div class="col-lg-6 mb-4 mb-lg-0">
+            <div class="card border-none shadow-akkhor border-radius-10 h-100">
+                <div class="card-body py-4 px-5">
+                    <div class="heading-layout1 mb-4">
+                        <div class="item-title"><h3 class="font-bold text-dark-medium mb-0">Répartition par sexe</h3></div>
                     </div>
-                    <div class="table-responsive mt-3">
-                        <table class="table table-hover text-nowrap">
-                            <thead>
-                                <tr>
-                                    <th>Photo</th>
-                                    <th>Matricule</th>
-                                    <th>Nom complet</th>
-                                    <th>Sexe</th>
-                                    <th>Classe</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse($recentStudents as $student)
-                                    <tr>
-                                        <td>
-                                            @if($student->photo)
-                                                <img src="{{ asset('storage/' . $student->photo) }}" alt="" style="width: 35px; height: 35px; border-radius: 50%; object-fit: cover;">
-                                            @else
-                                                <div style="width: 35px; height: 35px; border-radius: 50%; background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: bold; font-size: 14px;">
-                                                    {{ strtoupper(substr($student->prenom, 0, 1)) }}
-                                                </div>
-                                            @endif
-                                        </td>
-                                        <td><span style="font-family: monospace; font-size: 13px; color: #667eea;">{{ $student->matricule }}</span></td>
-                                        <td><strong>{{ $student->nom }}</strong> {{ $student->prenom }}</td>
-                                        <td>
-                                            @if($student->sexe == 'M')
-                                                <span class="badge" style="background-color: #4facfe; color: #fff; padding: 3px 10px; border-radius: 10px;">M</span>
-                                            @else
-                                                <span class="badge" style="background-color: #f093fb; color: #fff; padding: 3px 10px; border-radius: 10px;">F</span>
-                                            @endif
-                                        </td>
-                                        <td>{{ $student->classe->nom ?? '-' }}</td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="5" class="text-center text-muted py-4">
-                                            <i class="fas fa-user-graduate fa-2x mb-2 d-block" style="opacity: 0.3;"></i>
-                                            Aucun élève inscrit
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
+                    <div class="doughnut-chart-wrap mb-4">
+                        <canvas id="student-doughnut-chart" width="100" height="280"></canvas>
+                    </div>
+                    <div class="row mt-4 pt-4 border-top-akkhor text-center">
+                        <div class="col-6 border-right">
+                            <h2 class="font-weight-900 text-blue-sky mb-0">{{ $femaleStudents }}</h2>
+                            <div class="small font-bold text-muted opacity-75">FILLES</div>
+                        </div>
+                        <div class="col-6">
+                            <h2 class="font-weight-900 text-orange-peel mb-0">{{ $maleStudents }}</h2>
+                            <div class="small font-bold text-muted opacity-75">GARÇONS</div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Recent Evaluations Table -->
-        <div class="col-12 col-xl-6 col-6-xxxl">
-            <div class="card mg-b-20">
-                <div class="card-body">
-                    <div class="heading-layout1">
-                        <div class="item-title">
-                            <h3>Évaluations récentes</h3>
-                        </div>
-                        <div>
-                            <a href="{{ route('admin.evaluations.index') }}" class="btn btn-sm btn-outline-primary">
-                                <i class="fas fa-list"></i> Voir toutes
-                            </a>
-                        </div>
+        <!-- Inscriptions Distribution -->
+        <div class="col-lg-6">
+            <div class="card border-none shadow-akkhor border-radius-10 h-100">
+                <div class="card-body py-4 px-5">
+                    <div class="heading-layout1 mb-4">
+                        <div class="item-title"><h3 class="font-bold text-dark-medium mb-0">Inscriptions par cycle</h3></div>
                     </div>
-                    <div class="table-responsive mt-3">
-                        <table class="table table-hover text-nowrap">
-                            <thead>
-                                <tr>
-                                    <th>Libellé</th>
-                                    <th>Classe</th>
-                                    <th>Matière</th>
-                                    <th>Type</th>
-                                    <th>Statut</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse($recentEvaluations as $evaluation)
-                                    <tr>
-                                        <td><strong>{{ $evaluation->libelle }}</strong></td>
-                                        <td>{{ $evaluation->classe->nom ?? '-' }}</td>
-                                        <td>{{ $evaluation->matiere->nom ?? '-' }}</td>
-                                        <td>
-                                            <span class="badge" style="background-color: #e3f2fd; color: #1976d2; padding: 3px 10px; border-radius: 10px;">
-                                                {{ ucfirst($evaluation->type) }}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            @if($evaluation->statut == 'validee')
-                                                <span class="badge" style="background-color: #28a745; color: #fff; padding: 3px 10px; border-radius: 10px;">
-                                                    <i class="fas fa-check"></i> Validée
-                                                </span>
-                                            @else
-                                                <span class="badge" style="background-color: #ffc107; color: #333; padding: 3px 10px; border-radius: 10px;">
-                                                    <i class="fas fa-clock"></i> En cours
-                                                </span>
-                                            @endif
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="5" class="text-center text-muted py-4">
-                                            <i class="fas fa-clipboard-list fa-2x mb-2 d-block" style="opacity: 0.3;"></i>
-                                            Aucune évaluation
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
+                    <div class="earning-chart-wrap" style="min-height: 380px;">
+                        <canvas id="inscriptions-cycle-chart" width="100" height="380"></canvas>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Students Distribution per Class & Calendar Row -->
-    <div class="row gutters-20">
-
-        <!-- Students per Class Bar Chart -->
-        <div class="col-12 col-xl-8 col-6-xxxl">
-            <div class="card dashboard-card-two pd-b-20 mg-b-20">
-                <div class="card-body">
-                    <div class="heading-layout1">
-                        <div class="item-title">
-                            <h3>Effectifs par classe</h3>
-                        </div>
-                        <div class="dropdown">
-                            <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown"
-                                aria-expanded="false">...</a>
-                            <div class="dropdown-menu dropdown-menu-right">
-                                <a class="dropdown-item" href="{{ route('admin.classe.index') }}"><i
-                                        class="fas fa-eye text-dark-pastel-green"></i>Voir toutes</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="expense-chart-wrap" style="min-height: 320px;">
-                        <canvas id="students-per-class-chart" width="660" height="320"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Quick Stats Panel -->
-        <div class="col-12 col-xl-4 col-3-xxxl">
-            <div class="card mg-b-20">
-                <div class="card-body">
-                    <div class="heading-layout1">
-                        <div class="item-title">
-                            <h3>Statistiques rapides</h3>
-                        </div>
-                    </div>
-                    <div class="mt-3">
-                        <!-- Evaluations validated vs pending -->
-                        <div class="d-flex justify-content-between align-items-center mb-3 p-3" style="background: #f8f9fa; border-radius: 10px;">
-                            <div>
-                                <div style="font-size: 13px; color: #6c757d;">Évaluations validées</div>
-                                <div style="font-size: 22px; font-weight: 700; color: #28a745;">{{ $evaluationsValidees }}</div>
-                            </div>
-                            <div style="width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, #43e97b, #38f9d7); display: flex; align-items: center; justify-content: center;">
-                                <i class="fas fa-check-double text-white"></i>
-                            </div>
-                        </div>
-
-                        <div class="d-flex justify-content-between align-items-center mb-3 p-3" style="background: #f8f9fa; border-radius: 10px;">
-                            <div>
-                                <div style="font-size: 13px; color: #6c757d;">Évaluations en attente</div>
-                                <div style="font-size: 22px; font-weight: 700; color: #ffc107;">{{ $evaluationsEnAttente }}</div>
-                            </div>
-                            <div style="width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, #f093fb, #f5576c); display: flex; align-items: center; justify-content: center;">
-                                <i class="fas fa-hourglass-half text-white"></i>
-                            </div>
-                        </div>
-
-                        <div class="d-flex justify-content-between align-items-center mb-3 p-3" style="background: #f8f9fa; border-radius: 10px;">
-                            <div>
-                                <div style="font-size: 13px; color: #6c757d;">Notes saisies</div>
-                                <div style="font-size: 22px; font-weight: 700; color: #667eea;">{{ $notesCount }}</div>
-                            </div>
-                            <div style="width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center;">
-                                <i class="fas fa-pen text-white"></i>
-                            </div>
-                        </div>
-
-                        <div class="d-flex justify-content-between align-items-center mb-3 p-3" style="background: #f8f9fa; border-radius: 10px;">
-                            <div>
-                                <div style="font-size: 13px; color: #6c757d;">Types de frais</div>
-                                <div style="font-size: 22px; font-weight: 700; color: #e91e63;">{{ $typesFraisCount??0 }}</div>
-                            </div>
-                            <div style="width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, #fa709a, #fee140); display: flex; align-items: center; justify-content: center;">
-                                <i class="fas fa-money-bill-wave text-white"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Classes Overview Table -->
-    <div class="row gutters-20">
+    <!-- Classes Overview Table Section -->
+    <div class="row mb-5">
         <div class="col-12">
-            <div class="card mg-b-20">
-                <div class="card-body">
-                    <div class="heading-layout1">
-                        <div class="item-title">
-                            <h3>Aperçu des classes</h3>
-                        </div>
-                        <div>
-                            <a href="{{ route('admin.classe.index') }}" class="btn btn-sm btn-outline-primary">
-                                <i class="fas fa-external-link-alt"></i> Gérer les classes
-                            </a>
-                        </div>
+            <div class="card height-auto border-none shadow-akkhor border-radius-10">
+                <div class="card-body py-4 px-4">
+                    <div class="heading-layout1 mb-4 d-flex justify-content-between align-items-center">
+                        <div class="item-title"><h3 class="font-bold text-dark-medium mb-0">Perspective Globale des Classes</h3></div>
+                        <a href="{{ route('admin.classe.index') }}" class="btn-fill-lmd text-light bg-dodger-blue font-bold shadow-none border-none py-2 px-4 rounded-pill small">GÉRER LES CLASSES</a>
                     </div>
-                    <div class="table-responsive mt-3">
-                        <table class="table table-hover">
+                    <div class="table-responsive">
+                        <table class="table display data-table text-nowrap akkhor-table">
                             <thead>
-                                <tr>
-                                    <th>Classe</th>
+                                <tr class="bg-ash">
+                                    <th class="px-3">Classe</th>
                                     <th>Niveau</th>
                                     <th>Effectif</th>
                                     <th>Garçons</th>
                                     <th>Filles</th>
                                     <th>Matières</th>
-                                    <th>Progression</th>
+                                    <th style="width: 250px;">Progression Capacité</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @forelse($classesOverview as $classe)
-                                    <tr>
-                                        <td><strong>{{ $classe->nom }}</strong></td>
-                                        <td>{{ $classe->niveau->nom ?? '-' }}</td>
-                                        <td>
-                                            <span class="badge" style="background-color: #667eea; color: #fff; padding: 4px 12px; border-radius: 12px; font-size: 13px;">
-                                                {{ $classe->students_count }}
-                                            </span>
-                                        </td>
-                                        <td>{{ $classe->male_count }}</td>
-                                        <td>{{ $classe->female_count }}</td>
-                                        <td>{{ $classe->matieres_count }}</td>
-                                        <td style="width: 200px;">
-                                            @php
-                                                $capacity = 50;
-                                                $percent = $capacity > 0 ? min(round(($classe->students_count / $capacity) * 100), 100) : 0;
-                                                $barColor = $percent > 80 ? '#e74c3c' : ($percent > 50 ? '#f39c12' : '#27ae60');
-                                            @endphp
-                                            <div style="background: #e9ecef; border-radius: 10px; height: 8px; overflow: hidden;">
-                                                <div style="width: {{ $percent }}%; height: 100%; background: {{ $barColor }}; border-radius: 10px; transition: width 0.6s ease;"></div>
+                                <tr>
+                                    <td class="font-bold text-dark-medium px-3">{{ $classe->nom }}</td>
+                                    <td class="font-medium text-dark-low small text-uppercase">{{ $classe->niveau->nom ?? '-' }}</td>
+                                    <td><span class="badge-akkhor bg-light-blue text-blue-sky font-bold px-3 py-1 rounded-pill">{{ $classe->students_count }}</span></td>
+                                    <td><span class="text-orange-peel font-bold">{{ $classe->male_count }}</span></td>
+                                    <td><span class="text-blue-sky font-bold">{{ $classe->female_count }}</span></td>
+                                    <td class="text-center">{{ $classe->matieres_count }}</td>
+                                    <td>
+                                        @php
+                                            $capacity = 50;
+                                            $percent = $capacity > 0 ? min(round(($classe->students_count / $capacity) * 100), 100) : 0;
+                                            $barColor = $percent > 85 ? '#ff0000' : ($percent > 60 ? '#ffa001' : '#00c853');
+                                        @endphp
+                                        <div class="d-flex align-items-center">
+                                            <div class="progress w-100 mr-3" style="height: 6px; border-radius: 10px; background-color: #f0f1f3;">
+                                                <div class="progress-bar" style="width: {{ $percent }}%; background-color: {{ $barColor }}; border-radius: 10px;"></div>
                                             </div>
-                                            <small class="text-muted">{{ $percent }}% ({{ $classe->students_count }}/{{ $capacity }})</small>
-                                        </td>
-                                    </tr>
+                                            <span class="small font-bold" style="color: {{ $barColor }}; min-width: 35px;">{{ $percent }}%</span>
+                                        </div>
+                                    </td>
+                                </tr>
                                 @empty
-                                    <tr>
-                                        <td colspan="7" class="text-center text-muted py-4">
-                                            <i class="fas fa-school fa-2x mb-2 d-block" style="opacity: 0.3;"></i>
-                                            Aucune classe
-                                        </td>
-                                    </tr>
+                                <tr><td colspan="7" class="text-center py-5">Aucune donnée disponible.</td></tr>
                                 @endforelse
                             </tbody>
                         </table>
@@ -584,299 +265,230 @@
         </div>
     </div>
 
-    <!-- Event Calendar -->
-    <div class="row gutters-20">
-        <div class="col-12 col-xl-6">
-            <div class="card dashboard-card-four pd-b-20 mg-b-20">
-                <div class="card-body">
-                    <div class="heading-layout1">
-                        <div class="item-title">
-                            <h3>Calendrier</h3>
-                        </div>
+    <!-- Secondary Charts & Summary Panel -->
+    <div class="row">
+        <!-- Effectifs Bar Chart -->
+        <div class="col-xl-8 col-12 mb-4">
+            <div class="card border-none shadow-akkhor border-radius-10 h-100">
+                <div class="card-body py-4 px-5">
+                    <div class="heading-layout1 mb-4">
+                        <div class="item-title"><h3 class="font-bold text-dark-medium mb-0">Occupation par Classe</h3></div>
                     </div>
-                    <div class="calender-wrap">
-                        <div id="fc-calender" class="fc-calender"></div>
+                    <div class="expense-chart-wrap" style="min-height: 380px;">
+                        <canvas id="students-per-class-chart" width="100" height="380"></canvas>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Quick Actions Panel -->
-        <div class="col-12 col-xl-6">
-            <div class="card mg-b-20">
-                <div class="card-body">
-                    <div class="heading-layout1">
-                        <div class="item-title">
-                            <h3>Actions rapides</h3>
-                        </div>
+        <!-- Quick Summary Panel -->
+        <div class="col-xl-4 col-12 mb-4">
+            <div class="card border-none shadow-akkhor border-radius-10 h-100">
+                <div class="card-body py-4 px-5">
+                    <div class="heading-layout1 mb-4">
+                        <div class="item-title"><h3 class="font-bold text-dark-medium mb-0">Réseau d'Enseignement</h3></div>
                     </div>
-                    <div class="row mt-3">
-                        <div class="col-sm-6 mb-3">
-                            <a href="{{ route('admin.etudiant.create') }}" class="btn btn-lg btn-block text-white d-flex align-items-center" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; border-radius: 12px; padding: 18px 15px;">
-                                <i class="fas fa-user-plus fa-lg mg-r-15"></i>
-                                <span>Nouvel élève</span>
-                            </a>
+                    <div class="mt-4">
+                        <div class="summery-list p-4 bg-ash border-radius-10 mb-4 hover-lift">
+                            <div class="d-flex align-items-center">
+                                <div class="item-icon bg-light-blue text-blue-sky rounded-pill mr-3" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;"><i class="fas fa-user-tie"></i></div>
+                                <div>
+                                    <div class="text-muted small font-bold">ENSEIGNANTS ACTIFS</div>
+                                    <div class="h5 font-weight-900 text-dark-medium mb-0">{{ $teachers }}</div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-sm-6 mb-3">
-                            <a href="{{ route('admin.inscription.create') }}" class="btn btn-lg btn-block text-white d-flex align-items-center" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border: none; border-radius: 12px; padding: 18px 15px;">
-                                <i class="fas fa-file-signature fa-lg mg-r-15"></i>
-                                <span>Inscription</span>
-                            </a>
+                        <div class="summery-list p-4 bg-ash border-radius-10 mb-4 hover-lift">
+                            <div class="d-flex align-items-center">
+                                <div class="item-icon bg-light-yellow text-orange-peel rounded-pill mr-3" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;"><i class="fas fa-chalkboard"></i></div>
+                                <div>
+                                    <div class="text-muted small font-bold">SALLES / CLASSES</div>
+                                    <div class="h5 font-weight-900 text-dark-medium mb-0">{{ $dashboardClasses }}</div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-sm-6 mb-3">
-                            <a href="{{ route('admin.evaluations.create') }}" class="btn btn-lg btn-block text-white d-flex align-items-center" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border: none; border-radius: 12px; padding: 18px 15px;">
-                                <i class="fas fa-clipboard-list fa-lg mg-r-15"></i>
-                                <span>Évaluation</span>
-                            </a>
-                        </div>
-                        <div class="col-sm-6 mb-3">
-                            <a href="{{ route('admin.enseignant.create') }}" class="btn btn-lg btn-block text-white d-flex align-items-center" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); border: none; border-radius: 12px; padding: 18px 15px;">
-                                <i class="fas fa-chalkboard-teacher fa-lg mg-r-15"></i>
-                                <span>Enseignant</span>
-                            </a>
-                        </div>
-                        <div class="col-sm-6 mb-3">
-                            <a href="{{ route('admin.bulletins.index') }}" class="btn btn-lg btn-block text-white d-flex align-items-center" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); border: none; border-radius: 12px; padding: 18px 15px;">
-                                <i class="fas fa-file-alt fa-lg mg-r-15"></i>
-                                <span>Bulletins</span>
-                            </a>
-                        </div>
-                        <div class="col-sm-6 mb-3">
-                            <a href="{{ route('parametres_scolaires') }}" class="btn btn-lg btn-block text-white d-flex align-items-center" style="background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%); border: none; border-radius: 12px; padding: 18px 15px;">
-                                <i class="fas fa-cog fa-lg mg-r-15"></i>
-                                <span>Paramètres</span>
-                            </a>
+                        <div class="summery-list p-4 bg-light-green border-radius-10 mb-4 hover-lift" style="border: 1px solid #c6f6d5;">
+                            <div class="d-flex align-items-center">
+                                <div class="item-icon bg-white text-dark-pastel-green shadow-sm rounded-pill mr-3" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;"><i class="fas fa-graduation-cap"></i></div>
+                                <div>
+                                    <div class="text-dark-pastel-green small font-bold">TOTAL ÉLÈVES</div>
+                                    <div class="h5 font-weight-900 text-dark-blue mb-0">{{ $students }}</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Attendance Trends & Overdue Modal Start Here -->
-    <div class="row gutters-20">
-        <!-- Attendance Trend Chart -->
-        <div class="col-12 col-xl-12 col-12-xxxl">
-            <div class="card dashboard-card-one pd-b-20 mg-b-20">
-                <div class="card-body">
-                    <div class="heading-layout1">
-                        <div class="item-title">
-                            <h3>Tendance des présences (15 derniers jours)</h3>
-                        </div>
-                    </div>
-                    <div class="earning-chart-wrap" style="min-height: 350px;">
-                        <canvas id="attendance-trend-chart" width="100" height="350"></canvas>
-                    </div>
+<!-- Modal for Overdue Invoices -->
+<div class="modal fade" id="overdueModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content border-none border-radius-10 overflow-hidden shadow-lg">
+            <div class="modal-header bg-light-red py-4 px-5 border-none">
+                <h5 class="modal-title text-orange-red font-bold"><i class="fas fa-exclamation-circle mr-3"></i>Factures en retard de paiement</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body p-0">
+                <div class="table-responsive">
+                    <table class="table hover-table mb-0">
+                        <thead class="bg-ash">
+                            <tr>
+                                <th class="px-5">ÉLÈVE / FAMILLE</th>
+                                <th>CLASSE</th>
+                                <th>ÉCHÉANCE</th>
+                                <th>RESTE DU</th>
+                                <th class="text-right px-5">ACTION</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($overdueInvoices as $invoice)
+                            <tr>
+                                <td class="px-5 py-4">
+                                    <div class="font-bold text-dark-medium">{{ $invoice->inscription->student->nom }} {{ $invoice->inscription->student->prenom }}</div>
+                                    <span class="small text-muted opacity-75">ID: #{{ $invoice->id }}</span>
+                                </td>
+                                <td class="font-bold">{{ $invoice->inscription->classe->nom ?? '-' }}</td>
+                                <td class="text-orange-red font-bold small">{{ \Carbon\Carbon::parse($invoice->date_echeance)->format('d/m/Y') }}</td>
+                                <td class="font-weight-900 text-dark-blue">{{ number_format($invoice->reste, 0, ',', ' ') }} FCFA</td>
+                                <td class="text-right px-5">
+                                    <a href="{{ route('admin.inscription.show', $invoice->inscription_id) }}" class="btn-fill-sm bg-dodger-blue text-light font-bold shadow-none rounded py-2 px-3 small"><i class="fas fa-eye mr-1"></i></a>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
+            </div>
+            <div class="modal-footer bg-white border-top-akkhor py-3">
+                <button type="button" class="btn-fill-lmd bg-ash text-dark-low font-bold shadow-none border-none py-2 px-4 rounded-pill small" data-dismiss="modal">FERMER</button>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Modal for Overdue Invoices -->
-    <div class="modal fade" id="overdueModal" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Factures en retard</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Élève</th>
-                                    <th>Classe</th>
-                                    <th>Échéance</th>
-                                    <th>Montant Restant</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($overdueInvoices as $invoice)
-                                <tr>
-                                    <td>{{ $invoice->inscription->student->nom }} {{ $invoice->inscription->student->prenom }}</td>
-                                    <td>{{ $invoice->inscription->classe->nom ?? '-' }}</td>
-                                    <td class="text-danger font-bold">{{ \Carbon\Carbon::parse($invoice->date_echeance)->format('d/m/Y') }}</td>
-                                    <td>{{ number_format($invoice->reste, 0, ',', ' ') }} FCFA</td>
-                                    <td>
-                                        <a href="{{ route('admin.inscription.show', $invoice->inscription_id) }}" class="btn btn-xs btn-primary">Détails</a>
-                                    </td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
-                </div>
-            </div>
-        </div>
-    </div>
+<style>
+    /* Akkhor Reorganization Overrides */
+    .font-weight-900 { font-weight: 900; }
+    .tracking-1 { letter-spacing: 1px; }
+    .letter-spacing-1 { letter-spacing: 1px; }
+    .border-radius-15 { border-radius: 15px; }
+    .border-radius-10 { border-radius: 10px; }
+    .shadow-akkhor { box-shadow: 0px 10px 20px 0px rgba(229, 229, 229, 0.75); }
+    .hover-lift:hover { transform: translateY(-5px); transition: 0.3s; }
+    .border-none { border: none !important; }
+    
+    /* Soft Colors Extension */
+    .text-blue-sky { color: #3f7afc !important; }
+    .bg-light-blue { background-color: #eff6ff !important; }
+    .text-dark-blue { color: #042954 !important; }
+    .text-dark-pastel-green { color: #00c853 !important; }
+    .bg-light-green { background-color: #ecfdf5 !important; }
+    .text-orange-peel { color: #ffa001 !important; }
+    .bg-light-yellow { background-color: #fffbeb !important; }
+    .text-orange-red { color: #ff0000 !important; }
+    .bg-light-red { background-color: #fff1f2 !important; }
+    .bg-ash { background-color: #f0f1f3 !important; }
+    .bg-true-v { background-color: #9575cd !important; }
+    .bg-dodger-blue { background-color: #2196f3 !important; }
+    .border-top-akkhor { border-top: 1px solid #e5eef5 !important; }
 
-    <!-- Chart Scripts -->
-    <script>
-        window.studentStats = {
-            female: {{ $femaleStudents }},
-            male: {{ $maleStudents }}
-        };
+    /* Stat Box Custom */
+    .stat-icon {
+        width: 55px; height: 55px; border-radius: 15px;
+        display: flex; align-items: center; justify-content: center; font-size: 1.5rem;
+    }
 
-        window.inscriptionsByCycle = @json($inscriptionsByCycle);
-        window.studentsPerClass = @json($studentsPerClass);
-        
-        // Data for Attendance Trend
-        @php
-            $dates = $attendanceTrends->keys()->map(fn($d) => \Carbon\Carbon::parse($d)->format('d/m'))->values();
-            $presentData = [];
-            $absentData = [];
-            foreach($attendanceTrends as $date => $stats) {
-                $presentData[] = $stats->where('statut', 'present')->first()->count ?? 0;
-                $absentData[] = $stats->where('statut', 'absent')->first()->count ?? 0;
-            }
-        @endphp
-        window.attendanceData = {
-            labels: @json($dates),
-            present: @json($presentData),
-            absent: @json($absentData)
-        };
-    </script>
+    /* Financial Indicators */
+    .finance-card { min-height: 120px; display: flex; align-items: center; transition: all 0.3s ease; }
+    .finance-card.green { background: #00c853; }
+    .finance-card.red { background: #ff0000; }
+    .finance-card:hover { filter: brightness(1.1); transform: scale(1.02); }
+    .finance-icon { width: 50px; height: 50px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; }
 
+    /* Table Improvements */
+    .akkhor-table thead th {
+        font-weight: 700; text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.5px;
+        background-color: #f0f1f3; color: #111111; border: none !important;
+    }
+    .akkhor-table tbody td { vertical-align: middle; padding: 15px 20px; border-bottom: 1px solid #f1f3f5; }
+
+    /* Modal Styling */
+    .hover-table tr:hover { background-color: #fafbfc; }
+    .badge-akkhor { font-size: 0.8rem; }
+    .btn-fill-sm { padding: 8px 15px; }
+</style>
+
+<!-- Pass statistics to Chart Script -->
+<script>
+    window.studentStats = { female: {{ $femaleStudents }}, male: {{ $maleStudents }} };
+    window.inscriptionsByCycle = @json($inscriptionsByCycle);
+    window.studentsPerClass = @json($studentsPerClass);
+</script>
 @endsection
 
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-
-    // === Inscriptions by Cycle - Doughnut Chart ===
-    var cycleCtx = document.getElementById('inscriptions-cycle-chart');
-    if (cycleCtx && window.inscriptionsByCycle) {
-        var data = window.inscriptionsByCycle;
-        var colors = ['#667eea', '#f5576c', '#4facfe', '#43e97b', '#fa709a', '#a18cd1', '#fbc2eb', '#f093fb'];
-        new Chart(cycleCtx.getContext('2d'), {
+    // Student Doughnut
+    var genderCtx = document.getElementById('student-doughnut-chart');
+    if (genderCtx) {
+        new Chart(genderCtx.getContext('2d'), {
             type: 'doughnut',
             data: {
-                labels: data.map(function(item) { return item.label; }),
+                labels: ['Filles', 'Garçons'],
                 datasets: [{
-                    data: data.map(function(item) { return item.count; }),
-                    backgroundColor: colors.slice(0, data.length),
-                    borderWidth: 2,
-                    borderColor: '#fff'
+                    data: [window.studentStats.female, window.studentStats.male],
+                    backgroundColor: ['#3f7afc', '#ffa001'],
+                    borderWidth: 0,
+                    hoverOffset: 10
                 }]
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                legend: {
-                    position: 'bottom',
-                    labels: { padding: 15, usePointStyle: true }
-                }
-            }
+            options: { responsive: true, maintainAspectRatio: false, legend: { display: false }, cutoutPercentage: 70 }
         });
     }
 
-    // === Attendance Trend - Line Chart ===
-    var attendanceCtx = document.getElementById('attendance-trend-chart');
-    if (attendanceCtx && window.attendanceData) {
-        var attData = window.attendanceData;
-        new Chart(attendanceCtx.getContext('2d'), {
-            type: 'line',
+    // Cycles Distribution
+    var cycleCtx = document.getElementById('inscriptions-cycle-chart');
+    if (cycleCtx && window.inscriptionsByCycle) {
+        var cycleColors = ['#042954', '#ffa001', '#00c853', '#ff0000', '#3f7afc', '#9575cd'];
+        new Chart(cycleCtx.getContext('2d'), {
+            type: 'pie',
             data: {
-                labels: attData.labels,
-                datasets: [
-                    {
-                        label: 'Présents',
-                        data: attData.present,
-                        backgroundColor: 'rgba(67, 233, 123, 0.1)',
-                        borderColor: '#2ecc71',
-                        borderWidth: 3,
-                        pointBackgroundColor: '#2ecc71',
-                        tension: 0.4,
-                        fill: true
-                    },
-                    {
-                        label: 'Absents',
-                        data: attData.absent,
-                        backgroundColor: 'rgba(245, 87, 108, 0.1)',
-                        borderColor: '#e74c3c',
-                        borderWidth: 3,
-                        pointBackgroundColor: '#e74c3c',
-                        tension: 0.4,
-                        fill: true
-                    }
-                ]
+                labels: window.inscriptionsByCycle.map(item => item.label),
+                datasets: [{
+                    data: window.inscriptionsByCycle.map(item => item.count),
+                    backgroundColor: cycleColors.slice(0, window.inscriptionsByCycle.length),
+                    borderWidth: 2, borderColor: '#fff'
+                }]
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                legend: { position: 'top' },
-                scales: {
-                    yAxes: [{
-                        ticks: { beginAtZero: true, stepSize: 1 },
-                        gridLines: { color: 'rgba(0,0,0,0.05)' }
-                    }],
-                    xAxes: [{
-                        gridLines: { display: false }
-                    }]
-                },
-                tooltips: {
-                    mode: 'index',
-                    intersect: false
-                }
-            }
+            options: { responsive: true, maintainAspectRatio: false, legend: { position: 'bottom', labels: { padding: 20, fontStyle: 'bold' } } }
         });
     }
 
-    // === Students per Class - Bar Chart ===
+    // Classes Bar Chart
     var classCtx = document.getElementById('students-per-class-chart');
     if (classCtx && window.studentsPerClass) {
-        var classData = window.studentsPerClass;
         new Chart(classCtx.getContext('2d'), {
             type: 'bar',
             data: {
-                labels: classData.map(function(item) { return item.label; }),
+                labels: window.studentsPerClass.map(item => item.label),
                 datasets: [{
-                    label: 'Effectif',
-                    data: classData.map(function(item) { return item.count; }),
-                    backgroundColor: classData.map(function(_, i) {
-                        var barColors = [
-                            'rgba(102, 126, 234, 0.8)',
-                            'rgba(245, 87, 108, 0.8)',
-                            'rgba(79, 172, 254, 0.8)',
-                            'rgba(67, 233, 123, 0.8)',
-                            'rgba(250, 112, 154, 0.8)',
-                            'rgba(161, 140, 209, 0.8)',
-                            'rgba(251, 194, 235, 0.8)',
-                            'rgba(240, 147, 251, 0.8)'
-                        ];
-                        return barColors[i % barColors.length];
-                    }),
-                    borderColor: classData.map(function(_, i) {
-                        var borderColors = [
-                            '#667eea', '#f5576c', '#4facfe', '#43e97b',
-                            '#fa709a', '#a18cd1', '#fbc2eb', '#f093fb'
-                        ];
-                        return borderColors[i % borderColors.length];
-                    }),
-                    borderWidth: 2,
-                    borderRadius: 6,
-                    barPercentage: 0.6
+                    label: 'Étudiants',
+                    data: window.studentsPerClass.map(item => item.count),
+                    backgroundColor: ['#3f7afc', '#ffa001', '#00c853', '#ff0000', '#3f7afc', '#9575cd', '#00c853', '#ff0000', '#3f7afc', '#9575cd', '#00c853', '#ff0000', '#3f7afc', '#9575cd'],
+
+                    borderRadius: 8,
+                    barThickness: 30
                 }]
             },
             options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                legend: { display: false },
+                responsive: true, maintainAspectRatio: false, legend: { display: false },
                 scales: {
-                    yAxes: [{
-                        ticks: { beginAtZero: true, stepSize: 5 },
-                        gridLines: { color: 'rgba(0,0,0,0.05)' }
-                    }],
-                    xAxes: [{
-                        gridLines: { display: false }
-                    }]
+                    yAxes: [{ gridLines: { color: "#f1f3f5" }, ticks: { beginAtZero: true, fontStyle: 'bold' } }],
+                    xAxes: [{ gridLines: { display: false }, ticks: { fontStyle: 'bold' } }]
                 }
             }
         });
