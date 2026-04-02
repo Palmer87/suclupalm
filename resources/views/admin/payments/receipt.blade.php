@@ -130,11 +130,29 @@
     <div class="receipt-container">
         <div class="watermark">PAYÉ</div>
 
+        @php
+            $ecole = $payment->facture->inscription->ecole;
+        @endphp
+
         <div class="header">
-            <div class="logo">SGS - ÉCOLE</div>
-            <div style="text-align: right;">
-                <div class="value">REÇU #{{ str_pad($payment->id, 6, '0', STR_PAD_LEFT) }}</div>
-                <div>Date: {{ \Carbon\Carbon::parse($payment->date_paiement)->format('d/m/Y') }}</div>
+            <div class="header-left" style="flex: 0 0 120px;">
+                @if($ecole && $ecole->logo)
+                    <img src="{{ asset('storage/' . $ecole->logo) }}" alt="Logo" style="max-width: 100px; max-height: 100px;">
+                @else
+                    <div class="logo">SGS - ÉCOLE</div>
+                @endif
+            </div>
+            <div class="header-right" style="text-align: right; flex: 1;">
+                <h2 style="margin: 0; color: #3366cc; text-transform: uppercase;">{{ $ecole->nom ?? 'SGS - ÉCOLE' }}</h2>
+                <div style="font-size: 13px; color: #555; margin-top: 5px;">
+                    @if($ecole && $ecole->adresse) <div>{{ $ecole->adresse }}</div> @endif
+                    @if($ecole && $ecole->telephone) <div>Tél: {{ $ecole->telephone }}</div> @endif
+                    @if($ecole && $ecole->email) <div>Email: {{ $ecole->email }}</div> @endif
+                </div>
+                <div style="margin-top: 15px;">
+                    <div class="value" style="font-size: 16px;">REÇU #{{ str_pad($payment->id, 6, '0', STR_PAD_LEFT) }}</div>
+                    <div style="font-size: 12px;">Date: {{ \Carbon\Carbon::parse($payment->date_paiement)->format('d/m/Y') }}</div>
+                </div>
             </div>
         </div>
 

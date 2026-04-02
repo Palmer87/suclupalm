@@ -12,7 +12,7 @@ class CycleController extends Controller
      */
     public function index()
     {
-        $cycles = Cycle::all();
+        $cycles = Cycle::with('niveaux')->get();
         return view('admin.cycle.index', compact('cycles'));
     }
 
@@ -31,10 +31,10 @@ class CycleController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nom' => 'required',
+            'nom' => 'required|unique:cycles,nom',
         ]);  
         Cycle::create($request->all());
-        return redirect()->route('admin.cycle.index')->with('success', 'Cycle ajoute avec succes');
+        return redirect()->route('admin.cycle.index')->with('success', 'Cycle ajouté avec succès');
     }
 
     /**
@@ -42,7 +42,7 @@ class CycleController extends Controller
      */
     public function show(string $id)
     {
-        $cycle = Cycle::findOrFail($id);
+        $cycle = Cycle::with('niveaux')->findOrFail($id);
         return view('admin.cycle.show', compact('cycle'));
     }
 
@@ -62,12 +62,12 @@ class CycleController extends Controller
     public function update(Request $request, string $id)
     {
         $request->validate([
-            'nom' => 'required',
+            'nom' => 'required|unique:cycles,nom,' . $id,
         ]);
 
         $cycle = Cycle::findOrFail($id);
         $cycle->update($request->all());
-        return redirect()->route('admin.cycle.index')->with('success', 'Cycle modifie avec succes');
+        return redirect()->route('admin.cycle.index')->with('success', 'Cycle modifié avec succès');
     }
 
     /**
@@ -76,8 +76,14 @@ class CycleController extends Controller
 
     public function destroy(string $id)
     {
-        $cycle = Cycle::findOrFail($id);
+        $cycle = Cycle::withCount('niveaux')->findOrFail($id);
+        
+        if ($cycle->niveaux_count > 0) {
+            return redirect()->route('admin.cycle.index')
+                ->with('error', 'Impossible de supprimer ce cycle car il contient des niveaux actifs.');
+        }
+
         $cycle->delete();
-        return redirect()->route('admin.cycle.index')->with('success', 'Cycle supprime avec succes');
+        return redirect()->route('admin.cycle.index')->with('success', 'Cycle supprimé avec succès');
     }
 }

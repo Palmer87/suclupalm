@@ -1,115 +1,147 @@
 @extends('layouts.app')
+
 @section('content')
+    <div class="breadcrumbs-area">
+        <h3>Configuration Scolaire</h3>
+        <ul>
+            <li>
+                <a href="{{ route('dashboard') }}">Accueil</a>
+            </li>
+            <li>Liste des Niveaux</li>
+        </ul>
+    </div>
 
-
-          
-            <!-- Sidebar Area End Here -->
-      
-                <!-- Breadcubs Area Start Here -->
-                <div class="breadcrumbs-area">
-                    <h3>Niveaux</h3>
-                    <ul>
-                        <li>
-                            <a href="{{ route('dashboard') }}">Tableau de bord</a>
-                        </li>
-                        <li>Tous les niveaux</li>
-                    </ul>
-                </div>
-                <!-- Breadcubs Area End Here -->
-                <!-- Class Table Area Start Here -->
-                <div class="card height-auto">
-                    <div class="card-body">
-                        <div class="heading-layout1">
-                            <div class="item-title">
-                                <h3>Tous les niveaux</h3>
-                            </div>
-                           <div class="dropdown">
-                                <a class="dropdown-toggle" href="#" role="button" 
-                                data-toggle="dropdown" aria-expanded="false">...</a>
-        
-                                <div class="dropdown-menu dropdown-menu-right">
-                                    <a class="dropdown-item" href="#"><i class="fas fa-times text-orange-red"></i>Close</a>
-                                    <a class="dropdown-item" href="#"><i class="fas fa-cogs text-dark-pastel-green"></i>Edit</a>
-                                    <a class="dropdown-item" href="#"><i class="fas fa-redo-alt text-orange-peel"></i>Refresh</a>
-                                </div>
-                            </div>
+    <div class="row">
+        <!-- Stats Cards -->
+        <div class="col-xl-4 col-sm-6 col-12">
+            <div class="dashboard-summery-one mg-b-20">
+                <div class="row align-items-center">
+                    <div class="col-6">
+                        <div class="item-icon bg-light-magenta">
+                            <i class="flaticon-list text-magenta"></i>
                         </div>
-                        <form class="mg-b-20">
-                            <div class="row gutters-8">
-                                <div class="col-3-xxxl col-xl-3 col-lg-3 col-12 form-group">
-                                    <input type="text" placeholder="Search by ID ..." class="form-control">
-                                </div>
-                                <div class="col-4-xxxl col-xl-4 col-lg-3 col-12 form-group">
-                                    <input type="text" placeholder="Search by Name ..." class="form-control">
-                                </div>
-                
-                                <div class="col-1-xl col-xl-2 col-lg-3 col-12 form-group">
-                                    <button type="submit" class="fw-btn-fill btn-gradient-yellow">SEARCH</button>
-                                </div>
-                           
-                                <div class="col-1-xl col-xl-2 col-lg-3 col-12 form-group">
-                                     <a href="{{ route('admin.niveau.create') }}" class="fw-btn-fill btn-gradient-blue">CRÉER UN NIVEAU</a>
-                                </div> 
-                            </div>
-                        </form>
-                        <div class="table-responsive">
-                            <table class="table display data-table text-nowrap">
-                                <thead>
-                                    <tr>
-                                        <th> 
-                                            <div class="form-check">
-                                                <input type="checkbox" class="form-check-input checkAll">
-                                                <label class="form-check-label">ID</label>
-                                            </div>
-                                        </th>
-                                        <th>numero</th>
-                                        <th>nom</th>
-                                        <th>cycle</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                 
-                                    @foreach($niveaux as $niveau)
-                                    <tr>
-                                        <td>
-                                            <div class="form-check">
-                                                <input type="checkbox" class="form-check-input">
-                                                <label class="form-check-label">{{ $niveau->id }}</label>
-                                            </div>
-                                        </td>
-                                        <td class="text-center">{{ $niveau->numero }}</td>
-                                        <td>{{ $niveau->nom }}</td>
-                                        <td>{{ $niveau->cycle->nom }}</td>
-                                         <td>
-                                            <div class="dropdown">
-                                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                                                    <span class="flaticon-more-button-of-three-dots"></span>
-                                                </a>
-                                                <div class="dropdown-menu dropdown-menu-right">
-                                                    <a class="dropdown-item" href="{{ route('admin.niveau.show', $niveau->id) }}"><i class="fas fa-eye text-blue"></i>Voir</a>
-                                                    <a class="dropdown-item" href="{{ route('admin.niveau.edit', $niveau->id) }}"><i class="fas fa-edit text-green"></i>Modifier</a>
-                                                    
-                                                    <form action="{{ route('admin.niveau.destroy', $niveau->id) }}" method="POST">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" class="dropdown-item" onclick="return confirm('Confirmer la suppression ?');">
-                                                            <i class="fas fa-trash text-red"></i>Supprimer
-                                                        </button>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    @endforeach
-
-                            
-                             
-
-                                </tbody>
-                            </table>
+                    </div>
+                    <div class="col-6">
+                        <div class="item-content">
+                            <div class="item-title">Total Niveaux</div>
+                            <div class="item-number"><span class="text-dark font-weight-bold">{{ count($niveaux) }}</span></div>
                         </div>
                     </div>
                 </div>
-               
-@endsection 
+            </div>
+        </div>
+        <div class="col-xl-4 col-sm-6 col-12">
+            <div class="dashboard-summery-one mg-b-20">
+                <div class="row align-items-center">
+                    <div class="col-6">
+                        <div class="item-icon bg-light-yellow">
+                            <i class="flaticon-classmates text-orange"></i>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="item-content">
+                            <div class="item-title">Total Classes</div>
+                            <div class="item-number"><span class="text-dark font-weight-bold">{{ $niveaux->sum(fn($n) => $n->classes->count()) }}</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Niveau Table Area Start Here -->
+    <div class="card height-auto">
+        <div class="card-body">
+            <div class="heading-layout1">
+                <div class="item-title">
+                    <h3>Tous les Niveaux</h3>
+                </div>
+                <div class="dropdown">
+                    <a href="{{ route('admin.niveau.create') }}" class="btn-fill-lg btn-gradient-yellow btn-hover-bluedark">
+                        <i class="fas fa-plus mg-r-8"></i> Nouveau Niveau
+                    </a>
+                </div>
+            </div>
+
+            <!-- Simplified Search -->
+            <div class="mg-b-20">
+                <div class="row gutters-8">
+                    <div class="col-lg-10 col-12 form-group">
+                        <input type="text" id="niveauSearch" placeholder="Rechercher un niveau (nom, cycle...)" class="form-control" style="border-radius: 10px; border: 1px solid #edf2f7; padding: 12px 15px;">
+                    </div>
+                    <div class="col-lg-2 col-12 form-group">
+                        <button type="button" class="fw-btn-fill btn-gradient-yellow">RECHERCHER</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table display data-table text-nowrap">
+                    <thead>
+                        <tr>
+                            <th>Nom du Niveau</th>
+                            <th>Cycle Parent</th>
+                            <th>Classes Rattachées</th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="niveauTableBody">
+                        @foreach($niveaux as $niveau)
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-sm bg-light rounded mr-3 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                        <i class="fas fa-layer-group text-magenta"></i>
+                                    </div>
+                                    <span class="font-weight-bold">{{ $niveau->nom }}</span>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge badge-pill badge-info p-2 px-3">
+                                    {{ $niveau->cycle->nom }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge badge-pill badge-light p-2 px-3 border text-dark">
+                                    <i class="fas fa-school text-muted mg-r-5"></i> {{ $niveau->classes->count() }} Classes
+                                </span>
+                            </td>
+                            <td>
+                                <div class="d-flex justify-content-center" style="gap: 10px;">
+                                    <a href="{{ route('admin.niveau.edit', $niveau->id) }}" class="btn btn-sm bg-light text-success border-success" title="Modifier">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <form action="{{ route('admin.niveau.destroy', $niveau->id) }}" method="POST" class="d-inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm bg-light text-danger border-danger" title="Supprimer" onclick="return confirm('Confirmer la suppression ?');">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    @push('scripts')
+    <script>
+        document.getElementById('niveauSearch').addEventListener('keyup', function() {
+            let filter = this.value.toUpperCase();
+            let rows = document.querySelector("#niveauTableBody").rows;
+            for (let i = 0; i < rows.length; i++) {
+                let text = rows[i].textContent.toUpperCase();
+                if (text.indexOf(filter) > -1) {
+                    rows[i].style.display = "";
+                } else {
+                    rows[i].style.display = "none";
+                }
+            }
+        });
+    </script>
+    @endpush
+@endsection

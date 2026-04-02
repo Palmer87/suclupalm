@@ -15,7 +15,7 @@ class MatiereController extends Controller
      */
     public function index()
     {
-        $matieres = Matiere::with('classes')->get();
+        $matieres = Matiere::withCount('classes')->get();
         $classes = Classe::all();
         return view('admin.matiere.index', compact('matieres', 'classes'));
     }
@@ -34,28 +34,12 @@ class MatiereController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'nom' => [
-                'required',
-                'string',
-                'min:2',
-                'max:255',
-                'regex:/^[a-zA-ZÀ-ÿ0-9\s\-]+$/'
-            ],
-
-            'code' => [
-                'required',
-                'string',
-                'min:2',
-                'max:50',
-                'regex:/^[A-Z0-9_-]+$/',
-                Rule::unique('matieres', 'code')->ignore($request->input('id')),
-            ],
-
-
+        $validated = $request->validate([
+            'nom' => 'required|string|max:255',
+            'code' => 'required|string|max:50|unique:matieres,code',
         ]);
 
-        Matiere::create($request->all());
+        Matiere::create($validated);
         return redirect()->route('admin.matiere.index')->with('success', 'Matière créée avec succès.');
     }
 
@@ -64,8 +48,8 @@ class MatiereController extends Controller
      */
     public function show(Matiere $matiere)
     {
-        $matieres = Matiere::with('classes')->get();
-        return view('admin.matiere.show', compact('matieres')); 
+        $matiere->load('classes');
+        return view('admin.matiere.show', compact('matiere')); 
     }
 
     /**
@@ -82,32 +66,12 @@ class MatiereController extends Controller
      */
     public function update(Request $request, Matiere $matiere)
     {
-        $request->validate([
-            'nom' => [
-                'required',
-                'string',
-                'min:2',
-                'max:255',
-                'regex:/^[a-zA-ZÀ-ÿ0-9\s\-]+$/'
-            ],
-
-            'code' => [
-                'required',
-                'string',
-                'min:2',
-                'max:50',
-                'regex:/^[A-Z0-9_-]+$/',
-                Rule::unique('matieres', 'code')->ignore($matiere->id),
-            ],
-
-            'classe_id' => [
-                'nullable',
-                'integer',
-                Rule::exists('classes', 'id'),
-            ],
+        $validated = $request->validate([
+            'nom' => 'required|string|max:255',
+            'code' => 'required|string|max:50|unique:matieres,code,' . $matiere->id,
         ]);
 
-        $matiere->update($request->all());
+        $matiere->update($validated);
 
         return redirect()->route('admin.matiere.index')->with('success', 'Matière mise à jour avec succès.');    
     }
@@ -117,6 +81,12 @@ class MatiereController extends Controller
      */
     public function destroy(Matiere $matiere)
     {
+        // Vérifier si des évaluations ou des classes sont liées
+        if ($matiere->classes()->count() > 0 || $matiere->evaluations()->count() > 0) {
+            return redirect()->route('admin.matiere.index')
+                ->with('error', 'Impossible de supprimer cette matière car elle est liée à des classes ou des évaluations.');
+        }
+
         $matiere->delete(); 
 
         return redirect()->route('admin.matiere.index')->with('success', 'Matière supprimée avec succès.');

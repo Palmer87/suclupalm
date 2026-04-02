@@ -52,7 +52,7 @@ class PaymentController extends Controller
 
     public function receipt(Payment $payment)
     {
-        $payment->load(['facture.inscription.student', 'facture.inscription.classe', 'facture.payments']);
+        $payment->load(['facture.inscription.student', 'facture.inscription.classe', 'facture.payments', 'facture.inscription.ecole']);
 
         $amountInWords = $this->numberToWords($payment->montant);
 

@@ -44,6 +44,11 @@ class EvaluationController extends Controller
      */
     public function store(EvaluationRequest $request)
     {
+        $periode = Periode::findOrFail($request->periode_id);
+        if ($periode->anneeScolaire->status === 'archived') {
+            return back()->with('error', 'Impossible de créer une évaluation dans une année archivée.');
+        }
+
         Evaluation::create($request->all());
 
         return redirect()->route('admin.evaluations.index')->with('success', 'Évaluation créée avec succès');
@@ -84,6 +89,10 @@ class EvaluationController extends Controller
 
     public function update(Request $request, Evaluation $evaluation)
     {
+        if ($evaluation->estArchivee()) {
+            return back()->with('error', 'Modification impossible : cette année est archivée.');
+        }
+
         $request->validate([
             'classe_id' => 'required|exists:classes,id',
             'matiere_id' => 'required|exists:matieres,id',
@@ -104,6 +113,10 @@ class EvaluationController extends Controller
 
     public function destroy(Evaluation $evaluation)
     {
+        if ($evaluation->estArchivee()) {
+            return back()->with('error', 'Suppression impossible : cette année est archivée.');
+        }
+
         $evaluation->delete();
 
         return redirect()->route('admin.evaluations.index')->with('success', 'Évaluation supprimée avec succès');

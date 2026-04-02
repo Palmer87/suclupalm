@@ -1,159 +1,153 @@
 @extends('layouts.app')
+
 @section('content')
+    <div class="breadcrumbs-area">
+        <h3>Configuration Scolaire</h3>
+        <ul>
+            <li>
+                <a href="{{ route('dashboard') }}">Accueil</a>
+            </li>
+            <li>Liste des Classes</li>
+        </ul>
+    </div>
 
-
-
-<div class="breadcrumbs-area">
-    <h3>Toute les classe</h3>
-    <ul>
-        <li>
-            <a href="index.html">Home</a>
-        </li>
-        <li>Subjects</li>
-    </ul>
-</div>
-
-<div class="row">
-    <div class="col-4-xxxl col-12">
-        <div class="card height-auto">
-            <div class="card-body">
-                <div class="heading-layout1">
-                    <div class="item-title">
-                        <h3>Créer une classe </h3>
+    <div class="row">
+        <!-- Stats Cards -->
+        <div class="col-xl-4 col-sm-6 col-12">
+            <div class="dashboard-summery-one mg-b-20">
+                <div class="row align-items-center">
+                    <div class="col-6">
+                        <div class="item-icon bg-light-blue shadow-sm">
+                            <i class="flaticon-classmates text-blue"></i>
+                        </div>
                     </div>
-                    <div class="dropdown">
-                        <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown"
-                            aria-expanded="false">...</a>
-
-                        <div class="dropdown-menu dropdown-menu-right">
-                            <a class="dropdown-item" href="#"><i
-                                    class="fas fa-times text-orange-red"></i>Close</a>
-                            <a class="dropdown-item" href="#"><i
-                                    class="fas fa-cogs text-dark-pastel-green"></i>Edit</a>
-                            <a class="dropdown-item" href="#"><i
-                                    class="fas fa-redo-alt text-orange-peel"></i>Refresh</a>
+                    <div class="col-6">
+                        <div class="item-content">
+                            <div class="item-title">Total Classes</div>
+                            <div class="item-number"><span class="text-dark font-weight-bold">{{ $allClasses->count() }}</span></div>
                         </div>
                     </div>
                 </div>
-                <form  class="new-added-form" method="POST" action="{{ route('admin.classe.store') }}">
-                    @csrf
-                    <div class="row">
-                        <div class="col-xl-6 col-lg-6 col-12 form-group">
-                            <label for="name">Nom de la classe *</label>
-                            <input type="text" name="nom" id="nom" class="form-control" required>
-                        </div>
-                        <div class="col-xl-6 col-lg-6 col-12 form-group">
-                            <label for="niveau_id">Niveau *</label>
-                            <select name="niveau_id" id="niveau_id" class="form-control" required>
-                                @foreach($niveaux as $niveau)
-                                <option value="{{ $niveau->id }}">{{ $niveau->nom }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                     <div class="col-12 form-group mg-t-8">
-                            <button type="submit" class="btn-fill-lg btn-gradient-yellow btn-hover-bluedark">Enregistrer</button>
-                            <button type="reset" class="btn-fill-lg bg-blue-dark btn-hover-yellow">Réinitialiser</button>
-                        </div>
-                    </div>
-                </form>
             </div>
         </div>
-    </div>
-    <div class="col-8-xxxl col-12">
-        <div class="card height-auto">
-            <div class="card-body">
-                <div class="heading-layout1">
-                    <div class="item-title">
-                        <h3>Toute les classes</h3>
-                    </div>
-                    <div class="dropdown">
-                        <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown"
-                            aria-expanded="false">...</a>
-
-                        <div class="dropdown-menu dropdown-menu-right">
-                            <a class="dropdown-item" href="#"><i
-                                    class="fas fa-times text-orange-red"></i>Close</a>
-                            <a class="dropdown-item" href="#"><i
-                                    class="fas fa-cogs text-dark-pastel-green"></i>Edit</a>
-                            <a class="dropdown-item" href="#"><i
-                                    class="fas fa-redo-alt text-orange-peel"></i>Refresh</a>
+        <div class="col-xl-4 col-sm-6 col-12">
+            <div class="dashboard-summery-one mg-b-20">
+                <div class="row align-items-center">
+                    <div class="col-6">
+                        <div class="item-icon bg-light-green shadow-sm">
+                            <i class="flaticon-user text-green"></i>
                         </div>
                     </div>
-                </div>
-                <form class="mg-b-20">
-                    <div class="row gutters-8">
-                        <div class="col-lg-4 col-12 form-group">
-                            <input type="text" placeholder="Search by Exam ..." class="form-control">
-                        </div>
-                        <div class="col-lg-3 col-12 form-group">
-                            <input type="text" placeholder="Search by Subject ..." class="form-control">
-                        </div>
-                        <div class="col-lg-3 col-12 form-group">
-                            <input type="text" placeholder="dd/mm/yyyy" class="form-control">
-                        </div>
-                        <div class="col-lg-2 col-12 form-group">
-                            <button type="submit"
-                                class="fw-btn-fill btn-gradient-yellow">SEARCH</button>
+                    <div class="col-6">
+                        <div class="item-content">
+                            <div class="item-title">Élèves Totaux</div>
+                            <div class="item-number"><span class="text-dark font-weight-bold">{{ $allClasses->sum(fn($c) => $c->inscriptions->count()) }}</span></div>
                         </div>
                     </div>
-                </form>
-                <div class="table-responsive">
-                    <table class="table display data-table text-nowrap">
-                        <thead>
-                            <tr>
-                                <th>
-                                    <div class="form-check">
-                                        <input type="checkbox" class="form-check-input checkAll">
-                                        <label class="form-check-label">ID</label>
-                                    </div>
-                                </th>
-                                <th>Nom</th>
-                                <th>Niveau</th>
-                                <th>Date</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($classes as $classe)
-                            <tr>
-                                <td>
-                                    <div class="form-check">
-                                        <input type="checkbox" class="form-check-input">
-                                        <label class="form-check-label"><a href="{{ route('admin.classe.show', $classe->id) }}">{{ $classe->id }}</a></label>
-                                    </div>
-                                </td>
-                                <td>{{ $classe->nom }}</td>
-                                <td>{{ $classe->niveau->nom }}</td>
-                                <td>{{ $classe->created_at->format('d/m/Y') }}</td>
-                                <td>
-                                    <div class="dropdown">
-                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown"
-                                            aria-expanded="false">
-                                            <span class="flaticon-more-button-of-three-dots"></span>
-                                        </a>
-                                        <div class="dropdown-menu dropdown-menu-right">
-                                            <a class="dropdown-item" href="{{ route('admin.classe.show', $classe->id) }}"><i
-                                                    class="fas fa-times text-orange-red"></i>Voir</a>
-                                            <a class="dropdown-item" href="{{ route('admin.classe.edit', $classe->id) }}"><i
-                                                    class="fas fa-cogs text-dark-pastel-green"></i>Edit</a>
-                                            <form action="{{ route('admin.classe.destroy', $classe->id) }}" method="POST" style="display: inline;">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="dropdown-item" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette classe ?')"><i
-                                                        class="fas fa-trash-alt text-orange-red"></i>Supprimer</button>
-                                            </form>
-                                        </div> 
-                                    </div>
-                                </td>
-                                @endforeach
-                            </tr>
-
-                        </tbody>
-                    </table>
                 </div>
             </div>
         </div>
     </div>
-</div>
+
+    <!-- Classe Table Area Start Here -->
+    <div class="card height-auto shadow-sm">
+        <div class="card-body">
+            <div class="heading-layout1">
+                <div class="item-title">
+                    <h3>Toutes les Classes</h3>
+                </div>
+                <div class="dropdown">
+                    <a href="{{ route('admin.classe.create') }}" class="btn-fill-lg btn-gradient-yellow btn-hover-bluedark shadow-sm">
+                        <i class="fas fa-plus mg-r-8"></i> Nouvelle Classe
+                    </a>
+                </div>
+            </div>
+
+            <!-- Unified Search -->
+            <div class="mg-b-20">
+                <div class="row gutters-8">
+                    <div class="col-lg-10 col-12 form-group">
+                        <input type="text" id="classeSearch" placeholder="Rechercher une classe, un niveau..." class="form-control" style="border-radius: 10px; border: 1px solid #edf2f7; padding: 12px 15px;">
+                    </div>
+                    <div class="col-lg-2 col-12 form-group">
+                        <button type="button" class="fw-btn-fill btn-gradient-yellow">RECHERCHER</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table display data-table text-nowrap">
+                    <thead>
+                        <tr>
+                            <th>Nom de la Classe</th>
+                            <th>Niveau</th>
+                            <th>Effectif</th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="classeTableBody">
+                        @foreach($allClasses as $classe)
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-sm bg-light-blue rounded mr-3 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                        <i class="fas fa-chalkboard text-primary"></i>
+                                    </div>
+                                    <div>
+                                        <span class="font-weight-bold d-block">{{ $classe->nom }}</span>
+                                        <small class="text-muted">Créée le {{ $classe->created_at->format('d/m/Y') }}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge badge-pill badge-light p-2 px-3 border text-dark">
+                                    <i class="fas fa-layer-group text-muted mg-r-5"></i> {{ $classe->niveau->nom }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge badge-pill badge-info p-2 px-3">
+                                    <i class="fas fa-users mg-r-5"></i> {{ $classe->inscriptions->count() }} Élèves
+                                </span>
+                            </td>
+                            <td>
+                                <div class="d-flex justify-content-center" style="gap: 10px;">
+                                    <a href="{{ route('admin.classe.show', $classe->id) }}" class="btn btn-sm bg-light text-blue border-blue" title="Voir détails">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="{{ route('admin.classe.edit', $classe->id) }}" class="btn btn-sm bg-light text-success border-success" title="Modifier">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <form action="{{ route('admin.classe.destroy', $classe->id) }}" method="POST" class="d-inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm bg-light text-danger border-danger" title="Supprimer" onclick="return confirm('Confirmer la suppression de cette classe ?');">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    @push('scripts')
+    <script>
+        document.getElementById('classeSearch').addEventListener('keyup', function() {
+            let filter = this.value.toUpperCase();
+            let rows = document.querySelector("#classeTableBody").rows;
+            for (let i = 0; i < rows.length; i++) {
+                let text = rows[i].textContent.toUpperCase();
+                if (text.indexOf(filter) > -1) {
+                    rows[i].style.display = "";
+                } else {
+                    rows[i].style.display = "none";
+                }
+            }
+        });
+    </script>
+    @endpush
 @endsection

@@ -6,10 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Traits\BelongsToEcole;
 
+use Illuminate\Database\Eloquent\SoftDeletes;
+
 class Student extends Model
 {
     /** @use HasFactory<\Database\Factories\StudentFactory> */
-    use HasFactory, BelongsToEcole;
+    use HasFactory, BelongsToEcole, SoftDeletes;
 
 
     // Notes de l'élève

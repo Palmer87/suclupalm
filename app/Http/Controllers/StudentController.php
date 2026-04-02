@@ -16,7 +16,13 @@ class StudentController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Student::with('parents');
+        $activeAnnee = \App\Models\Annee_scolaire::where('status', 'actif')->first();
+        
+        $query = Student::with(['parents', 'inscriptions' => function($q) use ($activeAnnee) {
+            if ($activeAnnee) {
+                $q->where('annee_scolaire_id', $activeAnnee->id);
+            }
+        }, 'inscriptions.classe']);
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -30,18 +36,20 @@ class StudentController extends Controller
         if ($request->filled('sexe')) {
             $query->where('sexe', $request->sexe);
         }
-        $classesSearch = Inscription::with('classe')->get();
+
         if ($request->filled('classe_id')) {
-            $query->whereHas('inscriptions', function ($q) use ($request) {
+            $query->whereHas('inscriptions', function ($q) use ($request, $activeAnnee) {
                 $q->where('classe_id', $request->classe_id);
+                if ($activeAnnee) {
+                    $q->where('annee_scolaire_id', $activeAnnee->id);
+                }
             });
         }
 
-        $etudiants = $query->get();
-
+        $etudiants = $query->orderBy('nom')->orderBy('prenom')->get();
         $classes = \App\Models\Classe::orderBy('nom')->get();
 
-        return view('admin.etudiant.index', compact('etudiants', 'classes'));
+        return view('admin.etudiant.index', compact('etudiants', 'classes', 'activeAnnee'));
     }
 
     /**

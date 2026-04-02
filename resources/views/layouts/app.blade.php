@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>AKKHOR | Home 1</title>
+    <title>SGS</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Favicon -->
@@ -158,16 +158,10 @@
                             <a href="#" class="nav-link"><i class="flaticon-classmates"></i><span>Élèves</span></a>
                             <ul class="nav sub-group-menu">
                                 <li class="nav-item">
-                                    <a href="{{ route('admin.etudiant.index') }}" class="nav-link"><i class="fas fa-angle-right"></i>Tous les élèves</a>
+                                    <a href="{{ route('admin.etudiant.index') }}" class="nav-link"><i class="fas fa-angle-right"></i>Gestion / Inscriptions</a>
                                 </li>
                                 <li class="nav-item">
                                     <a href="{{ route('admin.etudiant.create') }}" class="nav-link"><i class="fas fa-angle-right"></i>Ajouter un élève</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="{{ route('admin.inscription.create') }}" class="nav-link"><i class="fas fa-angle-right"></i>Inscription d'un élève</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="{{ route('admin.inscription.index') }}" class="nav-link"><i class="fas fa-angle-right"></i>Toutes les inscriptions</a>
                                 </li>
                             </ul>
                         </li>
@@ -220,9 +214,12 @@
                             <a href="{{ route('admin.user.index') }}" class="nav-link"><i class="fas fa-users"></i><span>Utilisateurs</span></a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ route('parametres_scolaires') }}" class="nav-link"><i class="fas fa-cogs"></i><span>Paramètres scolaires</span></a>
+                            <a href="{{ route('admin.ecole.settings') }}" class="nav-link"><i class="fas fa-school"></i><span>Paramètres de l'école</span></a>
                         </li>
-                        @endrole
+                        <li class="nav-item">
+                            <a href="{{ route('parametres_scolaires') }}" class="nav-link"><i class="fas fa-cogs"></i><span>Calendrier & Périodes</span></a>
+                        </li>
+@endrole
                         <!-- <li class="nav-item sidebar-nav-item">
                             <a href="#" class="nav-link"><i class="flaticon-menu-1"></i><span>UI Elements</span></a>
                             <ul class="nav sub-group-menu">

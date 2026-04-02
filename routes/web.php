@@ -122,6 +122,8 @@ Route::middleware('auth', 'role:Super Admin|admin|staff')->group(function () {
     */
     Route::resource('annees', AnneeScolaireController::class)->names('admin.annee');
     Route::post('/annee-scolaire/{id}/activate', [AnneeScolaireController::class, 'activate'])->name('admin.annee.activate');
+    Route::post('/annee-scolaire/{id}/cloturer', [AnneeScolaireController::class, 'cloturer'])->name('admin.annee.cloturer');
+    Route::get('/annee-scolaire/{id}/export-zip', [AnneeScolaireController::class, 'exportZip'])->name('admin.annee.export_zip');
     Route::resource('periodes', PeriodeController::class)->names('admin.periodes');
 
     /*
@@ -164,6 +166,8 @@ Route::middleware('auth', 'role:Super Admin|admin|staff')->group(function () {
     |--------------------------------------------------------------------------
     */
     Route::resource('evaluations', EvaluationController::class)->names('admin.evaluations');
+    Route::get('/ecoles/settings', [EcoleController::class, 'settings'])->name('admin.ecole.settings');
+    Route::put('/ecoles/settings/{ecole}', [EcoleController::class, 'update'])->name('admin.ecole.update_settings');
 
     /*
     |--------------------------------------------------------------------------
@@ -185,6 +189,7 @@ Route::middleware('auth', 'role:Super Admin|admin|staff')->group(function () {
     Route::get('/bulletins', [\App\Http\Controllers\BulletinController::class, 'index'])->name('admin.bulletins.index');
     Route::get('/bulletins/{classe}', [\App\Http\Controllers\BulletinController::class, 'generate'])->name('admin.bulletins.generate');
     Route::get('/bulletins/{classe}/student/{student}', [\App\Http\Controllers\BulletinController::class, 'studentBulletin'])->name('admin.bulletins.student');
+    Route::get('/bulletins/{classe}/student/{student}/pdf', [\App\Http\Controllers\BulletinController::class, 'downloadPDF'])->name('admin.bulletins.download_pdf');
     Route::resource('factures', \App\Http\Controllers\FactureController::class)->names('admin.factures');
 
     // PDF Timetable Routes

@@ -10,6 +10,15 @@ use Illuminate\Support\Facades\Storage;
 class EcoleController extends Controller
 {
     /**
+     * Show the settings for the current school.
+     */
+    public function settings()
+    {
+        $ecole = Ecole::findOrFail(auth()->user()->ecole_id);
+        return view('admin.ecole.settings', compact('ecole'));
+    }
+
+    /**
      * Display a listing of the resource.
      */
     public function index()
@@ -96,15 +105,22 @@ class EcoleController extends Controller
      */
     public function update(Request $request, Ecole $ecole)
     {
-        $validated = $request->validate([
-            'nom' => 'required|string|max:255',
+        $isSuperAdmin = auth()->user()->hasRole('Super Admin');
+        
+        $rules = [
             'email' => 'nullable|email|max:255|unique:ecoles,email,' . $ecole->id,
             'telephone' => 'nullable|string|max:20',
             'adresse' => 'nullable|string',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'limite_etudiants' => 'nullable|integer',
-            'is_active' => 'boolean',
-        ]);
+        ];
+
+        if ($isSuperAdmin) {
+            $rules['nom'] = 'required|string|max:255';
+            $rules['limite_etudiants'] = 'nullable|integer';
+            $rules['is_active'] = 'boolean';
+        }
+
+        $validated = $request->validate($rules);
 
         if ($request->hasFile('logo')) {
             // Delete old logo
@@ -115,12 +131,18 @@ class EcoleController extends Controller
             $validated['logo'] = $logoPath;
         }
 
-        $validated['slug'] = Str::slug($request->nom);
+        if ($isSuperAdmin) {
+            $validated['slug'] = Str::slug($request->nom);
+        }
 
         $ecole->update($validated);
 
-        return redirect()->route('admin.ecole.index')
-            ->with('success', 'Établissement mis à jour avec succès.');
+        if ($isSuperAdmin) {
+            return redirect()->route('admin.ecole.index')
+                ->with('success', 'Établissement mis à jour avec succès.');
+        }
+
+        return back()->with('success', 'Les informations de l\'établissement ont été mises à jour.');
     }
 
     /**

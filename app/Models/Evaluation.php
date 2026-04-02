@@ -60,8 +60,8 @@ class Evaluation extends Model
 
     /* ================= HELPERS ================= */
 
-    public function estValidee(): bool
+    public function estArchivee(): bool
     {
-        return $this->statut === 'validee';
+        return $this->periode->anneeScolaire->status === 'archived';
     }
 }

@@ -35,6 +35,10 @@ class NoteController extends Controller
 
     public function store(Request $request, Evaluation $evaluation)
     {
+        if ($evaluation->estArchivee()) {
+            return back()->with('error', 'Modification impossible : cette année est archivée.');
+        }
+
         if ($evaluation->statut === 'validee') {
             return back()->with('error', 'Impossible de modifier des notes validées.');
         }
@@ -72,6 +76,10 @@ class NoteController extends Controller
 
     public function valider(Evaluation $evaluation)
     {
+        if ($evaluation->estArchivee()) {
+            return back()->with('error', 'Validation impossible : cette année est archivée.');
+        }
+
         if ($evaluation->statut === 'validee') {
             abort(403, 'Notes déjà validées');
         }

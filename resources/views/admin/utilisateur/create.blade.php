@@ -99,7 +99,17 @@
                                 <option value="">— Choisir un rôle —</option>
                                 @foreach($roles as $role)
                                     <option value="{{ $role->id }}" data-name="{{ $role->name }}" {{ old('role_id') == $role->id ? 'selected' : '' }}>
-                                        {{ $role->name }}
+                                        @if($role->name == 'admin')
+                                            Administrateur
+                                        @elseif($role->name == 'enseignant')
+                                            Enseignant
+                                        @elseif($role->name == 'parent')
+                                            Parent
+                                        @elseif($role->name == 'student')
+                                            Élève
+                                        @else
+                                            {{ $role->name }}
+                                        @endif
                                     </option>
                                 @endforeach
                             </select>

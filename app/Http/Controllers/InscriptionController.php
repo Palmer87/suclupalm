@@ -19,21 +19,38 @@ class InscriptionController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $inscriptions = Inscription::all();
+        $query = Inscription::with(['student', 'anneeScolaire', 'cycle', 'niveau', 'classe']);
+
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+            $query->whereHas('student', function ($q) use ($search) {
+                $q->where('nom', 'like', "%{$search}%")
+                  ->orWhere('prenom', 'like', "%{$search}%")
+                  ->orWhere('matricule', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->has('status') && $request->status != '') {
+            $query->where('status', $request->status);
+        }
+
+        $inscriptions = $query->orderBy('created_at', 'desc')->get();
         return view('admin.etudiant.inscription.index', compact('inscriptions'));
     }
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Request $request)
     {
         $annees = Annee_scolaire::where('status', 'actif')->get();
         $etudiants = Student::all();
         $cycles = Cycle::all();
         $niveaux = Niveau::all();
         $classes = Classe::all();
+
+        $selected_student_id = $request->query('student_id');
 
         $fraisData = Frais_Scolaire::with(['anneeScolaire', 'niveau'])
             ->get()
@@ -53,7 +70,8 @@ class InscriptionController extends Controller
             'cycles',
             'niveaux',
             'classes',
-            'fraisData'
+            'fraisData',
+            'selected_student_id'
         ));
     }
     /**

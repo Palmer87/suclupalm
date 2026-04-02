@@ -130,12 +130,20 @@
         <div class="card-body">
             <div class="heading-layout1">
                 <div class="item-title">
-                    <h3>Liste des élèves</h3>
+                    <h3>Tous les élèves</h3>
                 </div>
-                <div>
+                <div class="d-flex flex-wrap" style="gap: 10px;">
                     <a href="{{ route('admin.etudiant.create') }}"
                         class="btn-fill-lg btn-gradient-yellow btn-hover-bluedark">
-                        <i class="fas fa-plus mg-r-5"></i> Nouvel élève
+                        <i class="fas fa-user-plus mg-r-5"></i> Nouvel élève
+                    </a>
+                    <a href="{{ route('admin.inscription.create') }}" 
+                        class="btn-fill-lg bg-blue-dark btn-hover-yellow text-white">
+                        <i class="fas fa-file-invoice mg-r-5"></i> Inscrire un élève
+                    </a>
+                    <a href="{{ route('admin.inscription.index') }}" 
+                        class="btn-fill-lg bg-light text-dark shadow-sm">
+                        <i class="fas fa-list-ul mg-r-5"></i> Liste Inscriptions
                     </a>
                 </div>
             </div>
@@ -145,96 +153,104 @@
                     <thead>
                         <tr>
                             <th>Matricule</th>
-                            <th>Photo</th>
-                            <th>Nom complet</th>
+                            <th>Élève</th>
                             <th>Sexe</th>
-                            <th>Classe</th>
+                            <th>Inscription {{ $activeAnnee->annee ?? '' }}</th>
                             <th>Parents</th>
-                            <th>Date de naissance</th>
+                            <th>Date naiss.</th>
                             <th>Téléphone</th>
-                            <th>Actions</th>
+                            <th class="text-center">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($etudiants as $etudiant)
-                            <tr>
+                        <tr>
                                 <td>
                                     <a href="{{ route('admin.etudiant.show', $etudiant->id) }}"
-                                        style="color: #667eea; font-weight: 600;">
+                                        class="font-weight-bold text-primary">
                                         {{ $etudiant->matricule }}
                                     </a>
                                 </td>
-                                <td class="text-center">
-                                    @if($etudiant->photo)
-                                        <img src="{{ asset('storage/' . $etudiant->photo) }}" alt="{{ $etudiant->nom }}"
-                                            style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid #e8e8e8;">
-                                    @else
-                                        <div
-                                            style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #667eea, #764ba2); display: inline-flex; align-items: center; justify-content: center; color: #fff; font-weight: bold; font-size: 13px;">
-                                            {{ strtoupper(substr($etudiant->prenom, 0, 1)) }}{{ strtoupper(substr($etudiant->nom, 0, 1)) }}
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-sm mr-3">
+                                            @if($etudiant->photo)
+                                                <img src="{{ asset('storage/' . $etudiant->photo) }}" alt="{{ $etudiant->nom }}"
+                                                    style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid #e8e8e8;">
+                                            @else
+                                                <div class="rounded-circle d-flex align-items-center justify-content-center text-white font-weight-bold" 
+                                                     style="width: 40px; height: 40px; background: linear-gradient(135deg, #667eea, #764ba2); font-size: 13px;">
+                                                    {{ strtoupper(substr($etudiant->prenom, 0, 1)) }}{{ strtoupper(substr($etudiant->nom, 0, 1)) }}
+                                                </div>
+                                            @endif
                                         </div>
-                                    @endif
+                                        <div class="identity">
+                                            <div class="font-weight-600 text-dark">{{ $etudiant->nom }} {{ $etudiant->prenom }}</div>
+                                            <small class="text-muted">{{ $etudiant->sexe == 'M' ? 'Garçon' : 'Fille' }}</small>
+                                        </div>
+                                    </div>
                                 </td>
-                                <td><strong>{{ $etudiant->nom }}</strong> {{ $etudiant->prenom }}</td>
                                 <td>
                                     @if($etudiant->sexe == 'M')
-                                        <span class="badge"
-                                            style="background-color: #e3f2fd; color: #1976d2; padding: 3px 10px; border-radius: 10px;">
-                                            <i class="fas fa-male mg-r-3"></i> M
-                                        </span>
+                                        <span class="badge badge-pill" style="background-color: #e3f2fd; color: #1976d2;">M</span>
                                     @else
-                                        <span class="badge"
-                                            style="background-color: #fce4ec; color: #c62828; padding: 3px 10px; border-radius: 10px;">
-                                            <i class="fas fa-female mg-r-3"></i> F
-                                        </span>
+                                        <span class="badge badge-pill" style="background-color: #fce4ec; color: #c62828;">F</span>
                                     @endif
                                 </td>
                                 <td>
-                                    @if($etudiant->classe)
-                                        <span class="badge"
-                                            style="background-color: #e8eaf6; color: #3949ab; padding: 3px 10px; border-radius: 10px;">
-                                            {{ $etudiant->classe->nom }}
-                                        </span>
+                                    @php
+                                        $currentInscription = $etudiant->inscriptions->first();
+                                    @endphp
+                                    @if($currentInscription)
+                                        <div class="inscription-status">
+                                            <span class="badge badge-success p-2 px-3" style="border-radius: 20px;">
+                                                <i class="fas fa-check-circle mr-1"></i> Inscrit
+                                            </span>
+                                            <div class="small text-muted mt-1">
+                                                {{ $currentInscription->classe->nom ?? 'Classe N/A' }}
+                                            </div>
+                                        </div>
                                     @else
-                                        <span style="color: #aaa;">Non assigné</span>
+                                        <span class="badge badge-light border p-2 px-3 text-muted" style="border-radius: 20px;">
+                                            <i class="fas fa-times-circle mr-1"></i> Non inscrit
+                                        </span>
                                     @endif
                                 </td>
                                 <td>
                                     @if($etudiant->parents && $etudiant->parents->count())
                                         @foreach($etudiant->parents as $parent)
-                                            <span style="font-size: 13px;">
-                                                {{ $parent->nom }} {{ $parent->prenom }}
-                                                @if($parent->pivot && $parent->pivot->relation)
-                                                    <small style="color: #667eea;">({{ $parent->pivot->relation }})</small>
-                                                @endif
-                                            </span>
-                                            @if(!$loop->last)<br>@endif
+                                            <div class="small">{{ $parent->nom }} {{ $parent->prenom }}</div>
                                         @endforeach
                                     @else
-                                        <span style="color: #aaa;">-</span>
+                                        <span class="text-muted small">-</span>
                                     @endif
                                 </td>
-                                <td>{{ $etudiant->date_naissance ? \Carbon\Carbon::parse($etudiant->date_naissance)->format('d/m/Y') : '-' }}
-                                </td>
+                                <td>{{ $etudiant->date_naissance ? \Carbon\Carbon::parse($etudiant->date_naissance)->format('d/m/Y') : '-' }}</td>
                                 <td>{{ $etudiant->phone ?? '-' }}</td>
-                                <td>
+                                <td class="text-center">
                                     <div class="dropdown">
-                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                                            <span class="flaticon-more-button-of-three-dots"></span>
-                                        </a>
-                                        <div class="dropdown-menu dropdown-menu-right">
+                                        <button class="btn btn-light btn-sm dropdown-toggle shadow-sm border-0" type="button" data-toggle="dropdown">
+                                            <i class="fas fa-ellipsis-v"></i>
+                                        </button>
+                                        <div class="dropdown-menu dropdown-menu-right shadow border-0">
                                             <a class="dropdown-item" href="{{ route('admin.etudiant.show', $etudiant->id) }}">
-                                                <i class="fas fa-eye text-blue mg-r-8"></i>Voir
+                                                <i class="fas fa-eye text-primary mr-2"></i> Profil complet
                                             </a>
                                             <a class="dropdown-item" href="{{ route('admin.etudiant.edit', $etudiant->id) }}">
-                                                <i class="fas fa-cogs text-dark-pastel-green mg-r-8"></i>Modifier
+                                                <i class="fas fa-edit text-success mr-2"></i> Modifier infos
                                             </a>
-                                            <form action="{{ route('admin.etudiant.destroy', $etudiant->id) }}" method="POST"
-                                                style="display: inline;" onsubmit="return confirm('Supprimer cet élève ?');">
+                                            @if(!$currentInscription)
+                                                <div class="dropdown-divider"></div>
+                                                <a class="dropdown-item font-weight-bold text-warning" href="{{ route('admin.inscription.create', ['student_id' => $etudiant->id]) }}">
+                                                    <i class="fas fa-file-invoice mr-2"></i> Inscrire cet élève
+                                                </a>
+                                            @endif
+                                            <div class="dropdown-divider"></div>
+                                            <form action="{{ route('admin.etudiant.destroy', $etudiant->id) }}" method="POST" onsubmit="return confirm('Supprimer cet élève ?');">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="dropdown-item">
-                                                    <i class="fas fa-trash text-orange-red mg-r-8"></i>Supprimer
+                                                <button type="submit" class="dropdown-item text-danger">
+                                                    <i class="fas fa-trash-alt mr-2"></i> Supprimer
                                                 </button>
                                             </form>
                                         </div>
@@ -254,5 +270,14 @@
             </div>
         </div>
     </div>
+
+<style>
+    .avatar-sm { flex-shrink: 0; }
+    .identity .font-weight-600 { font-size: 15px; letter-spacing: 0.2px; }
+    .dropdown-item { padding: 10px 20px; font-size: 14px; transition: all 0.2s; }
+    .dropdown-item:hover { background-color: #f8f9fa; transform: translateX(5px); }
+    .badge-pill { font-weight: 600; padding: 4px 12px; }
+    .table tbody tr:hover { background-color: #fcfcfc; transition: background 0.3s; }
+</style>
 
 @endsection

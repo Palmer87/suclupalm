@@ -52,9 +52,9 @@
                     <div class="col-xl-3 col-lg-6 col-12 form-group">
                         <label>Nom de l'élève *</label>
                         <select name="student_id" class="select2" required>
-                            <option value="" disabled selected>Choisissez un étudiant</option>
+                            <option value="" disabled {{ !isset($selected_student_id) && !old('student_id') && !isset($inscription) ? 'selected' : '' }}>Choisissez un étudiant</option>
                             @foreach($etudiants as $etudiant)
-                                <option value="{{$etudiant->id}}" {{ old('student_id', isset($inscription) ? $inscription->student_id : null) == $etudiant->id ? 'selected' : '' }}>
+                                <option value="{{$etudiant->id}}" {{ (old('student_id', isset($inscription) ? $inscription->student_id : ($selected_student_id ?? null))) == $etudiant->id ? 'selected' : '' }}>
                                     {{$etudiant->nom}} {{$etudiant->prenom}}
                                 </option>
                             @endforeach

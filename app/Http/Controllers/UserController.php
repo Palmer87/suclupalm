@@ -18,8 +18,6 @@ class UserController extends Controller
     {
         $query = User::with('ecole');
 
-        // Since we removed BelongsToEcole from User model (to avoid infinite loops)
-        // we must manually filter here for multi-tenant isolation.
         if (auth()->check() && !auth()->user()->hasRole('Super Admin')) {
             $query->where('ecole_id', auth()->user()->ecole_id);
         }
@@ -33,8 +31,16 @@ class UserController extends Controller
      */
     public function create()
     {
-        $roles = Role::all();
-        $ecoles = Ecole::all();
+        if (auth()->user()->hasRole('Super Admin')) {
+            $roles = Role::all();
+        } else {
+            $roles = Role::where('name', '!=', 'Super Admin')->get();
+        }
+        if (auth()->user()->hasRole('Super Admin')) {
+            $ecoles = Ecole::all();
+        } else {
+            $ecoles = Ecole::where('id', auth()->user()->ecole_id)->get();
+        }
         return view('admin.utilisateur.create', compact('roles', 'ecoles'));
     }
 
@@ -59,7 +65,7 @@ class UserController extends Controller
         ]);
 
         $ecoleId = $request->ecole_id;
-        
+
         // Sécurité : Si l'utilisateur n'est pas Super Admin, on force son ecole_id
         if (auth()->check() && !auth()->user()->hasRole('Super Admin')) {
             $ecoleId = auth()->user()->ecole_id;
@@ -100,7 +106,7 @@ class UserController extends Controller
     {
         $roles = Role::all();
         $ecoles = Ecole::all();
-        
+
         $query = User::query();
         if (auth()->check() && !auth()->user()->hasRole('Super Admin')) {
             $query->where('ecole_id', auth()->user()->ecole_id);
@@ -147,7 +153,7 @@ class UserController extends Controller
 
         $role = Role::findOrFail($request->role_id);
         $user->syncRoles([$role]);
-        
+
         return redirect()->route('admin.user.index')->with('success', 'Utilisateur modifié avec succès.');
     }
 
@@ -163,6 +169,6 @@ class UserController extends Controller
 
         $user = $query->findOrFail($id);
         $user->delete();
-        return redirect()->route('admin.user.index')->with('success', 'Utilisateur supprimé avec succès');  
+        return redirect()->route('admin.user.index')->with('success', 'Utilisateur supprimé avec succès');
     }
 }

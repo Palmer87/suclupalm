@@ -20,13 +20,35 @@
 
     <div class="card height-auto">
         <div class="card-body">
+            <!-- School Header -->
+            <div class="row mb-5 pb-3 border-bottom align-items-center">
+                <div class="col-md-2 text-center text-md-left">
+                    @if(isset($ecole) && $ecole->logo)
+                        <img src="{{ asset('storage/' . $ecole->logo) }}" alt="Logo École" style="max-width: 120px; max-height: 120px;">
+                    @else
+                        <div class="h3 text-primary font-weight-bold">SGS</div>
+                    @endif
+                </div>
+                <div class="col-md-10 text-md-right">
+                    <h2 class="mb-1 text-uppercase font-weight-bold" style="color: #042954;">{{ $ecole->nom ?? 'SGS - ÉCOLE' }}</h2>
+                    <div style="font-size: 14px; color: #555;">
+                        @if(isset($ecole) && $ecole->adresse) <span><i class="fas fa-map-marker-alt mr-1"></i> {{ $ecole->adresse }}</span> @endif
+                        @if(isset($ecole) && $ecole->telephone) <span class="ml-3"><i class="fas fa-phone mr-1"></i> {{ $ecole->telephone }}</span> @endif
+                        @if(isset($ecole) && $ecole->email) <span class="ml-3"><i class="fas fa-envelope mr-1"></i> {{ $ecole->email }}</span> @endif
+                    </div>
+                </div>
+            </div>
+
             <div class="heading-layout1">
                 <div class="item-title">
-                    <h3>Bulletin - {{ $annee->annee }}{{ $periode ? ' - ' . $periode->nom : '' }}</h3>
+                    <h3 class="text-uppercase" style="letter-spacing: 1px;">Bulletin de Notes - {{ $annee->annee }}{{ $periode ? ' (' . $periode->nom . ')' : '' }}</h3>
                 </div>
                 <div class="dropdown">
                     <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-expanded="false">...</a>
                     <div class="dropdown-menu dropdown-menu-right">
+                        <a class="dropdown-item" href="{{ route('admin.bulletins.download_pdf', ['classe' => $classe->id, 'student' => $bulletin['student']->id, 'periode_id' => $periode ? $periode->id : null]) }}">
+                            <i class="fas fa-file-pdf text-danger"></i> Télécharger PDF
+                        </a>
                         <a class="dropdown-item" href="#" onclick="window.print()"><i class="fas fa-print"></i> Imprimer</a>
                         <a class="dropdown-item"
                             href="{{ route('admin.bulletins.generate', ['classe' => $classe->id, 'periode_id' => $periode ? $periode->id : null]) }}"><i

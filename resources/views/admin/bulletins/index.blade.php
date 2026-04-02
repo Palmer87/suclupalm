@@ -10,7 +10,6 @@
             <li>Bulletins</li>
         </ul>
     </div>
-
     <div class="card height-auto">
         <div class="card-body">
             <div class="heading-layout1">
@@ -20,6 +19,16 @@
             </div>
 
             <div class="row mg-b-20">
+                <div class="col-xl-3 col-lg-6 col-12 form-group">
+                    <label>Année Scolaire</label>
+                    <select id="anneeSelector" class="select2" onchange="window.location.href='{{ route('admin.bulletins.index') }}?annee_scolaire_id=' + this.value">
+                        @foreach($annees as $a)
+                            <option value="{{ $a->id }}" {{ $annee->id == $a->id ? 'selected' : '' }}>
+                                {{ $a->annee }} {{ $a->status === 'archived' ? '(Archivée)' : '' }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
                 <div class="col-xl-3 col-lg-6 col-12 form-group">
                     <label>Période (Optionnel)</label>
                     <select id="periodeSelector" class="select2">
@@ -32,7 +41,6 @@
                     </select>
                 </div>
             </div>
-
             <div class="table-responsive">
                 <table class="table display data-table text-nowrap">
                     <thead>
@@ -59,24 +67,33 @@
                 </table>
             </div>
         </div>
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                const selector = document.getElementById('periodeSelector');
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const selector = document.getElementById('periodeSelector');
+            const anneeSelector = document.getElementById('anneeSelector');
 
-                // Event delegation to handle clicks on generate buttons, even after DataTable re-draws
-                document.addEventListener('click', function (e) {
-                    const btn = e.target.closest('.generate-btn');
-                    if (btn) {
-                        const periodId = selector.value;
-                        let url = new URL(btn.href);
-                        if (periodId) {
-                            url.searchParams.set('periode_id', periodId);
-                        } else {
-                            url.searchParams.delete('periode_id');
-                        }
-                        btn.href = url.toString();
+            // Event delegation to handle clicks on generate buttons
+            document.addEventListener('click', function (e) {
+                const btn = e.target.closest('.generate-btn');
+                if (btn) {
+                    const periodId = selector.value;
+                    const anneeId = anneeSelector.value;
+                    let url = new URL(btn.href);
+                    
+                    if (periodId) {
+                        url.searchParams.set('periode_id', periodId);
+                    } else {
+                        url.searchParams.delete('periode_id');
                     }
-                });
+
+                    if (anneeId) {
+                        url.searchParams.set('annee_scolaire_id', anneeId);
+                    }
+
+                    btn.href = url.toString();
+                }
             });
-        </script>
+        });
+    </script>
 @endsection

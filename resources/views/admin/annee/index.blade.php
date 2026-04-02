@@ -87,15 +87,33 @@
                                                 </a>
                                                 <div class="dropdown-menu dropdown-menu-right">
                                                     <a class="dropdown-item" href="{{ route('admin.annee.show', $annee->id) }}"><i class="fas fa-eye text-blue"></i>Voir</a>
-                                                    <a class="dropdown-item" href="{{ route('admin.annee.edit', $annee->id) }}"><i class="fas fa-edit text-green"></i>Modifier</a>
-                                                    <form action="{{ route('admin.annee.activate', $annee->id) }}" method="POST">
-                                                        @csrf
-                                                        @method('POST')
-                                                        <button type="submit" class="dropdown-item" onclick="return confirm('Confirmer l\'activation ?');">
-                                                            <i class="fas fa-check text-success"></i>Activer
-                                                        </button>
-                                                    </form>
-                                                    <form action="{{ route('admin.annee.destroy', $annee->id) }}" method="POST">
+                                                     <a class="dropdown-item" href="{{ route('admin.annee.edit', $annee->id) }}"><i class="fas fa-edit text-green"></i>Modifier</a>
+                                                     
+                                                     @if($annee->status === 'active')
+                                                        <form action="{{ route('admin.annee.cloturer', $annee->id) }}" method="POST">
+                                                            @csrf
+                                                            <button type="submit" class="dropdown-item" onclick="return confirm('Êtes-vous sûr de vouloir clôturer cette année ? Cela la rendra en lecture seule.');">
+                                                                <i class="fas fa-lock text-warning"></i>Clôturer & Archiver
+                                                            </button>
+                                                        </form>
+                                                     @endif
+
+                                                     @if($annee->status === 'archived')
+                                                        <a class="dropdown-item" href="{{ route('admin.annee.export_zip', $annee->id) }}">
+                                                            <i class="fas fa-file-archive text-primary"></i>Exporter Bulletins (ZIP)
+                                                        </a>
+                                                     @endif
+
+                                                     @if($annee->status !== 'active' && $annee->status !== 'archived')
+                                                        <form action="{{ route('admin.annee.activate', $annee->id) }}" method="POST">
+                                                            @csrf
+                                                            <button type="submit" class="dropdown-item" onclick="return confirm('Confirmer l\'activation ?');">
+                                                                <i class="fas fa-check text-success"></i>Activer
+                                                            </button>
+                                                        </form>
+                                                     @endif
+
+                                                     <form action="{{ route('admin.annee.destroy', $annee->id) }}" method="POST">
                                                         @csrf
                                                         @method('DELETE')
                                                         <button type="submit" class="dropdown-item" onclick="return confirm('Confirmer la suppression ?');">

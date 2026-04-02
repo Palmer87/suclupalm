@@ -4,7 +4,12 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Annee_scolaire;
+use App\Models\Classe;
 use Illuminate\Support\Facades\DB;
+use App\Services\BulletinService;
+use Barryvdh\DomPDF\Facade\Pdf;
+use ZipArchive;
+use Illuminate\Support\Facades\Storage;
 
 class AnneeScolaireController extends Controller
 {
@@ -115,6 +120,51 @@ class AnneeScolaireController extends Controller
     });
 
     return back()->with('success', 'Année scolaire activée');
+}
+
+public function cloturer($id)
+{
+    $annee = Annee_scolaire::findOrFail($id);
+    
+    if ($annee->status === 'archived') {
+        return back()->with('error', 'Cette année est déjà archivée.');
+    }
+
+    $annee->update(['status' => 'archived']);
+
+    return back()->with('success', 'Année scolaire clôturée et archivée avec succès.');
+}
+
+public function exportZip($id, BulletinService $bulletinService)
+{
+    $annee = Annee_scolaire::findOrFail($id);
+    $classes = Classe::all();
+    
+    $zip = new ZipArchive;
+    $fileName = 'Bulletins_' . str_replace('/', '-', $annee->annee) . '.zip';
+    $tempFile = tempnam(sys_get_temp_dir(), 'zip');
+
+    if ($zip->open($tempFile, ZipArchive::CREATE) === TRUE) {
+        foreach ($classes as $classe) {
+            $data = $bulletinService->getBulletinsData($classe, null, $annee);
+            
+            foreach ($data['bulletins'] as $bulletin) {
+                $pdf = Pdf::loadView('admin.bulletins.pdf', [
+                    'classe' => $classe,
+                    'bulletin' => $bulletin,
+                    'annee' => $annee,
+                    'periode' => null,
+                    'classStats' => $data['classStats']
+                ]);
+                
+                $pdfName = $classe->nom . '/' . $bulletin['student']->nom . '_' . $bulletin['student']->prenom . '.pdf';
+                $zip->addFromString($pdfName, $pdf->output());
+            }
+        }
+        $zip->close();
+    }
+
+    return response()->download($tempFile, $fileName)->deleteFileAfterSend(true);
 }
 
 }
