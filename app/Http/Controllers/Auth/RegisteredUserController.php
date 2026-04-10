@@ -19,17 +19,6 @@ class RegisteredUserController extends Controller
      */
     public function create(): View
     {
-
-      
-            $user = User::create([
-                'name' => 'Admin User',
-                'email' => 'palmer@example.com',
-                'password' => Hash::make('password'),
-            ]);
-
-            $user->assignRole('Super Admin');
-        
-
         return view('auth.register');
     }
 
@@ -51,8 +40,9 @@ class RegisteredUserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role_id' => $request->role_id,
+
         ]);
+        $user->assignRole('Super Admin');
 
         event(new Registered($user));
 
