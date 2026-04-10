@@ -16,13 +16,14 @@ class ParentsFactory extends Factory
      */
     public function definition(): array
     {
+        $faker = app(\Faker\Generator::class);
         return [
-            'nom' => fake()->lastName,
-            'prenom' => fake()->firstName,
-            'email' => fake()->unique()->safeEmail,
-            'telephone' => fake()->phoneNumber,
-            'autre_telephone' => fake()->optional()->phoneNumber,
-            'adresse' => fake()->address,
+            'nom' => $faker->lastName,
+            'prenom' => $faker->firstName,
+            'email' => $faker->unique()->safeEmail,
+            'telephone' => $faker->phoneNumber,
+            'autre_telephone' => $faker->optional()->phoneNumber,
+            'adresse' => $faker->address,
         ];
     }
 }

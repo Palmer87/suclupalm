@@ -16,15 +16,16 @@ class StudentFactory extends Factory
      */
     public function definition(): array
     {
+        $faker = app(\Faker\Generator::class);
         return [
-            'matricule' => fake()->unique()->bothify('STUD-####'),
-            'nom' => fake()->lastName,
-            'prenom' => fake()->firstName,
-            'sexe' => fake()->randomElement(['M', 'F']),
-            'date_naissance' => fake()->date('Y-m-d', '-10 years'),
-            'email' => fake()->unique()->safeEmail,
-            'phone' => fake()->phoneNumber,
-            'address' => fake()->address,
+            'matricule' => $faker->unique()->bothify('STUD-####'),
+            'nom' => $faker->lastName,
+            'prenom' => $faker->firstName,
+            'sexe' => $faker->randomElement(['M', 'F']),
+            'date_naissance' => $faker->date('Y-m-d', '-10 years'),
+            'email' => $faker->unique()->safeEmail,
+            'phone' => $faker->phoneNumber,
+            'address' => $faker->address,
             'status' => 'active',
         ];
     }
