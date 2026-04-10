@@ -64,6 +64,38 @@ class DashboardController extends Controller
             ));
         }
 
+        // 2. TEACHER DASHBOARD
+        if (auth()->user()->hasRole('enseignant')) {
+            $enseignant = Enseignant::where('user_id', auth()->id())->first();
+            
+            if (!$enseignant) {
+                return view('dashboard')->with('error', 'Compte enseignant non trouvé.');
+            }
+
+            // Stats de l'enseignant
+            $myAffectations = $enseignant->affectations()->with(['classe.niveau', 'matiere'])->get();
+            $myClasses = $myAffectations->pluck('classe')->unique();
+            $myClassesCount = $myClasses->count();
+            
+            $myEvaluations = Evaluation::where('enseignant_id', auth()->id())->latest()->take(5)->get();
+            $myEvaluationsCount = Evaluation::where('enseignant_id', auth()->id())->count();
+            
+            // Étudiants uniques dans ses classes - utilisation de la table inscription
+            $myStudentsCount = inscription::whereIn('classe_id', $myClasses->pluck('id'))->count();
+            
+            $anneeActive = Annee_scolaire::active();
+
+            return view('admin.dashboard.enseignant', compact(
+                'enseignant',
+                'myAffectations',
+                'myClassesCount',
+                'myStudentsCount',
+                'myEvaluationsCount',
+                'myEvaluations',
+                'anneeActive'
+            ));
+        }
+
         // 2. SCOLAR DASHBOARD (SCHOOL ADMINS & OTHERS)
         // Core counts — utiliser count() au lieu de all() pour éviter OOM
         $studentsCount   = Student::count();

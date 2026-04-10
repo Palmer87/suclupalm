@@ -54,7 +54,7 @@
                         <select name="student_id" class="select2" required>
                             <option value="" disabled {{ !isset($selected_student_id) && !old('student_id') && !isset($inscription) ? 'selected' : '' }}>Choisissez un étudiant</option>
                             @foreach($etudiants as $etudiant)
-                                <option value="{{$etudiant->id}}" {{ (old('student_id', isset($inscription) ? $inscription->student_id : ($selected_student_id ?? null))) == $etudiant->id ? 'selected' : '' }}>
+                                <option value="{{$etudiant->id}}" data-est_affecte="{{$etudiant->est_affecte ? 1 : 0}}" {{ (old('student_id', isset($inscription) ? $inscription->student_id : ($selected_student_id ?? null))) == $etudiant->id ? 'selected' : '' }}>
                                     {{$etudiant->nom}} {{$etudiant->prenom}}
                                 </option>
                             @endforeach
@@ -207,6 +207,14 @@
                     var inscription = parseFloat(item.frais_inscription) || 0;
                     var scolarite = parseFloat(item.frais_Scolarité) || 0;
 
+                    // Vérifier si l'étudiant est affecté via l'attribut data
+                    var $selectedStudent = $('select[name="student_id"] option:selected');
+                    var isAffecte = $selectedStudent.data('est_affecte') == 1;
+
+                    if (isAffecte) {
+                        scolarite = 0;
+                    }
+
                     if (inscription > 0) {
                         $fraisBody.append('<tr><td>Frais d\'inscription</td><td>' + inscription.toLocaleString('fr-FR') + ' FCFA</td></tr>');
                         total += inscription;
@@ -235,6 +243,10 @@
                 });
 
                 $annee.on('change', function () {
+                    updateFrais();
+                });
+
+                $('select[name="student_id"]').on('change', function () {
                     updateFrais();
                 });
 

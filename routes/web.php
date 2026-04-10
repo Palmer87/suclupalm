@@ -46,7 +46,7 @@ Route::get('/student-details', function () {
 | ROUTES PROTÉGÉES
 |--------------------------------------------------------------------------
 */
-Route::middleware('auth', 'role:Super Admin|admin|staff')->group(function () {
+Route::middleware('auth', 'role:Super Admin|admin|enseignant|staff')->group(function () {
 
     /*
     |--------------------------------------------------------------------------

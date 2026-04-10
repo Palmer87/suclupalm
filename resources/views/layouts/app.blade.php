@@ -149,6 +149,28 @@
                         <li class="nav-item">
                             <a href="{{ route('admin.user.index') }}" class="nav-link"><i class="fas fa-users-cog"></i><span>Utilisateurs Globaux</span></a>
                         </li>
+                        @elserole('enseignant')
+                        {{-- MENU ENSEIGNANT --}}
+                        <li class="nav-item">
+                            <a href="{{ route('dashboard') }}" class="nav-link"><i class="flaticon-calendar"></i><span>Tableau de bord</span></a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.emploi_du_temps.index') }}" class="nav-link"><i class="flaticon-calendar"></i><span>Mon Emploi du temps</span></a>
+                        </li>
+                        <li class="nav-item sidebar-nav-item">
+                            <a href="#" class="nav-link"><i class="flaticon-shopping-list"></i><span>Mes Évaluations</span></a>
+                            <ul class="nav sub-group-menu">
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.evaluations.index') }}" class="nav-link"><i class="fas fa-angle-right"></i>Toutes les évaluations</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.evaluations.create') }}" class="nav-link"><i class="fas fa-angle-right"></i>Créer une évaluation</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.bulletins.index') }}" class="nav-link"><i class="flaticon-script"></i><span>Bulletins & Notes</span></a>
+                        </li>
                         @else
                         {{-- MENU SCOLAIRE (ADMIN ÉCOLE & STAFF) --}}
                         <li class="nav-item">
@@ -219,7 +241,7 @@
                         <li class="nav-item">
                             <a href="{{ route('parametres_scolaires') }}" class="nav-link"><i class="fas fa-cogs"></i><span>Calendrier & Périodes</span></a>
                         </li>
-@endrole
+                        @endrole
                         <!-- <li class="nav-item sidebar-nav-item">
                             <a href="#" class="nav-link"><i class="flaticon-menu-1"></i><span>UI Elements</span></a>
                             <ul class="nav sub-group-menu">

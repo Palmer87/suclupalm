@@ -29,6 +29,7 @@ class Student extends Model
         'status',
         'photo',
         'ecole_id',
+        'est_affecte',
     ];
     private function generateMatricule()
     {

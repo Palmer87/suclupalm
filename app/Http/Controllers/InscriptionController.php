@@ -120,6 +120,12 @@ class InscriptionController extends Controller
                 $fraisScolarite = $frais->frais_Scolarité ?? 0;
             }
 
+            // Si l'élève est affecté, il ne paie que les frais d'inscription
+            $student = Student::findOrFail($request->student_id);
+            if ($student->est_affecte) {
+                $fraisScolarite = 0;
+            }
+
             $total = $fraisInscription + $fraisScolarite;
 
             $facture = Facture::updateOrCreate(
@@ -222,6 +228,12 @@ class InscriptionController extends Controller
 
             $fraisInscription = $frais->frais_inscription ?? 0;
             $fraisScolarite = $frais->frais_Scolarité ?? 0;
+
+            // Si l'élève est affecté, il ne paie que les frais d'inscription
+            if ($inscription->student && $inscription->student->est_affecte) {
+                $fraisScolarite = 0;
+            }
+
             $total = $fraisInscription + $fraisScolarite;
 
             $facture = Facture::updateOrCreate(
