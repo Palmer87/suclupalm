@@ -13,61 +13,32 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // 1. Initialisation des données de base (Rôles)
+        // 1. Toujours exécuter les données système essentielles
         $this->call([
-            RoleSeeder::class,
+            SystemSeeder::class,
         ]);
 
-        // 2. Création des Écoles
-        $this->call([
-            EcoleSeeder::class,
-        ]);
-
+        // 2. Initialiser le TenantManager pour les données de test (si une école existe)
         $ecole = \App\Models\Ecole::first();
         if ($ecole) {
-            // Fixe l'école active pour que les seeders suivants affectent les données à cette école
             \App\Tenant\TenantManager::setEcoleId($ecole->id);
         }
 
-        // 3. Autres Seeders (dépendants de l'école active)
-        $this->call([
-            CycleSeeder::class,
-            NiveauSeeder::class,
-            ClasseSeeder::class,
-            AnneeScolaireSeeder::class,
-            ParentsSeeder::class,
-            RelationSeeder::class,
-            StudentSeeder::class,
-            InscriptionSeeder::class,
-            MatiereSeeder::class,
-            EnseignantSeeder::class,
-            AffectationPedagogiqueSeeder::class,
-            PeriodeSeeder::class,
-            EvaluationSeeder::class,
-            JourSeeder::class,
-            HoraireSeeder::class,
-        ]);
-
-        // 4. Créer un Super Administrateur (sans école, accès global)
-        $superAdmin = \App\Models\User::firstOrCreate([
-            'email' => 'superadmin@admin.com',
-        ], [
-            'name' => 'Super Admin',
-            'password' => \Illuminate\Support\Facades\Hash::make('password'),
-            'ecole_id' => null,
-        ]);
-        $superAdmin->assignRole('Super Admin');
-
-        // 5. Créer un utilisateur Administrateur d'école (lié à l'école de test)
-        if ($ecole) {
-            $admin = \App\Models\User::firstOrCreate([
-                'email' => 'admin@admin.com',
-            ], [
-                'name' => 'Admin Test',
-                'password' => \Illuminate\Support\Facades\Hash::make('password'),
-                'ecole_id' => $ecole->id, // Important : lié à l'école
+        // 3. Exécuter les données de test uniquement en local ou si spécifié
+        if (config('app.env') !== 'production' || env('SEED_TEST_DATA', false)) {
+            $this->command->info('Seeding test data...');
+            
+            $this->call([
+                ClasseSeeder::class,
+                ParentsSeeder::class,
+                RelationSeeder::class,
+                StudentSeeder::class,
+                InscriptionSeeder::class,
+                EnseignantSeeder::class,
+                AffectationPedagogiqueSeeder::class,
+                PeriodeSeeder::class,
+                EvaluationSeeder::class,
             ]);
-            $admin->assignRole('admin');
         }
     }
 }
